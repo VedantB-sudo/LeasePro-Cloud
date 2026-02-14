@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Dashboard | LeasePro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background-color: #f8f9fa; }
+        
+        /* Fixed Sidebar Architecture */
+        .sidebar { 
+            width: 260px; background: #2c3e50; color: white; height: 100vh; 
+            position: fixed; padding: 25px; box-sizing: border-box; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+        }
+        
+        .sidebar h2 { color: #3498db; border-bottom: 1px solid #3e4f5f; padding-bottom: 10px; }
+        
+        .nav-link { 
+            display: block; color: #bdc3c7; text-decoration: none; 
+            padding: 12px 15px; border-radius: 8px; transition: 0.3s; 
+        }
+        
+        .nav-link:hover, .nav-link.active { background: #3498db; color: white; }
+
+        .logout-btn { 
+            background: #c0392b; color: white; border: none; padding: 12px; 
+            width: 100%; cursor: pointer; border-radius: 8px; font-weight: bold; 
+        }
+
+        /* Content Area */
+        .main-content { flex: 1; margin-left: 260px; padding: 40px; }
+        
+        /* Property Grid */
+        .property-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; margin-top: 20px; 
+        }
+        
+        .property-card { 
+            background: white; padding: 20px; border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; 
+        }
+        
+        .property-card:hover { transform: translateY(-5px); }
+        
+        .price { color: #27ae60; font-size: 1.4rem; font-weight: bold; }
+        .btn-view { 
+            display: block; text-align: center; background: #3498db; 
+            color: white; padding: 10px; border-radius: 6px; 
+            text-decoration: none; margin-top: 15px; 
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div>
+            <h2>LeasePro</h2>
+            <p>Logged in as: <strong>{{ user.username }}</strong></p>
+            <p style="font-size: 0.8rem; color: #95a5a6;">Role: Tenant</p>
+            <hr style="border: 0; border-top: 1px solid #3e4f5f; margin: 20px 0;">
+            <div class="nav-links">
+                <a href="{% url 'tenant_dashboard' %}" class="nav-link active">
+                    <i class="fas fa-search"></i> Browse Properties
+                </a>
+            </div>
+        </div>
+        
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Secure Logout</button>
+        </form>
+    </nav>
+
+    <main class="main-content">
+        <h1>Available Listings</h1>
+        <div class="property-grid">
+            {% for p in properties %}
+            <div class="property-card">
+                <div class="price">£{{ p.rent_amount }}/mo</div>
+                <h3><i class="fas fa-map-marker-alt"></i> {{ p.address }}</h3>
+                <p>{{ p.description|truncatewords:15 }}</p>
+                <a href="{% url 'property_detail' pk=p.pk %}" class="btn-view">View Full Details</a>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+</body>
+</html>

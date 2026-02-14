@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Listing | LeasePro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background-color: #f8f9fa; }
+        .sidebar { width: 260px; background: #2c3e50; color: white; height: 100vh; position: fixed; padding: 25px; box-sizing: border-box; }
+        .main-content { flex: 1; margin-left: 260px; padding: 40px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 600px; }
+        .form-group { margin-bottom: 20px; }
+        .current-img { width: 100px; border-radius: 5px; margin: 10px 0; display: block; }
+        .btn-save { background: #27ae60; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { color: #7f8c8d; text-decoration: none; margin-left: 15px; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <h2 style="color: #3498db;">LeasePro</h2>
+        <a href="{% url 'dashboard' %}" style="color: #bdc3c7; text-decoration: none; display: block; padding: 10px 0;">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </nav>
+
+    <main class="main-content">
+        <div class="card">
+            <h1>Edit Property Details</h1>
+            <p style="color: #7f8c8d;">Updating: <strong>{{ property.address }}</strong></p>
+            <hr>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if property.image %}
+                    <label>Current Image:</label>
+                    <img src="{{ property.image.url }}" class="current-img">
+                {% endif %}
+
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+
+                <button type="submit" class="btn btn-save">Save Changes</button>
+                <a href="{% url 'property_detail' property.pk %}" class="btn-cancel">Discard Changes</a>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

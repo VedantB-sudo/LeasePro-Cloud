@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register | LeasePro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-green: #10b981;
+            --accent-blue: #2563eb;
+            --text-white: #ffffff;
+            --text-muted: #cbd5e1;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.2) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                        #0f172a;
+            background-attachment: fixed;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background-clip: padding-box; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px; 
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            color: var(--text-white);
+        }
+
+        h2 { text-align: center; margin: 0 0 10px 0; font-weight: 600; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem; }
+
+        /* Fix for Label/Text Visibility */
+        form p { 
+            text-align: left; 
+            color: var(--text-white) !important; 
+            margin-bottom: 15px; 
+            font-size: 0.9rem; 
+        }
+
+        .helptext, .helptext ul, li {
+            color: var(--text-muted) !important;
+            font-size: 0.75rem;
+            margin-top: 4px;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        /* Input Styling */
+        input:not([type="radio"]), select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        /* Horizontal Radio Button Alignment Fix */
+        form ul {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            gap: 30px;
+            padding: 0;
+            list-style: none;
+        }
+
+        form ul li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white !important;
+        }
+
+        form input[type="radio"] {
+            width: auto !important;
+            margin: 0 !important;
+        }
+
+        /* Button Styling */
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+
+        button:hover { 
+            transform: translateY(-2px); 
+            filter: brightness(1.1); 
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .back-link { 
+            display: block; 
+            text-align: center; 
+            margin-top: 25px; 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 0.85rem; 
+        }
+        .back-link:hover { color: white; }
+
+        .error-box {
+            background: rgba(239, 68, 68, 0.15); /* Soft Red */
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #fca5a5;
+            font-size: 0.85rem;
+            text-align: left;
+        }
+
+        .error-box p {
+            margin: 5px 0 0 0 !important;
+            color: #fca5a5 !important;  
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <h2>Join LeasePro</h2>
+        <div class="subtitle">Secure Property Management Starts Here</div>
+        
+        <form method="post" action="{% url 'signup' %}">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="error-box">
+                    {% for error in form.non_field_errors %}
+                        <p><i class="fas fa-exclamation-triangle"></i> {{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                {% if field.errors %}
+                    <div class="error-box">
+                        <strong>{{ field.label }}:</strong>
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {{ form.as_p }}
+            <button type="submit">Create Account</button>
+        </form>
+
+        <a href="{% url 'login' %}" class="back-link">Already have an account? Login here</a>
+    </div>
+
+</body>
+</html>

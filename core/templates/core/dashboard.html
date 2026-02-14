@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Dashboard | LeasePro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Base Layout */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            display: flex; 
+            background-color: #f8f9fa; 
+        }
+
+        /* Sidebar Fix: Using Flexbox to push logout to bottom */
+        .sidebar { 
+            width: 260px; 
+            background: #2c3e50; 
+            color: white; 
+            height: 100vh; 
+            position: fixed; 
+            padding: 25px; 
+            box-sizing: border-box; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; /* Spaced top and bottom */
+        }
+
+        .sidebar h2 { 
+            color: #3498db; 
+            margin-top: 0;
+            margin-bottom: 25px; 
+            border-bottom: 1px solid #3e4f5f; 
+            padding-bottom: 10px; 
+        }
+
+        /* Nav Links Styling */
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-link {
+            display: block;
+            color: #bdc3c7;
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+
+        .nav-link.active {
+            background: #3498db;
+            color: white;
+        }
+
+        /* Logout Button */
+        .logout-btn { 
+            background: #c0392b; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            width: 100%; 
+            cursor: pointer; 
+            border-radius: 8px; 
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #a93226;
+        }
+
+        /* Main Content */
+        .main-content { 
+            flex: 1; 
+            margin-left: 260px; 
+            padding: 40px; 
+        }
+
+        .header-flex { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+        }
+
+        /* Card & Table Styling */
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { 
+            text-align: left; 
+            padding: 15px; 
+            background-color: #f2f4f6; 
+            color: #7f8c8d; 
+            text-transform: uppercase; 
+            font-size: 0.75rem; 
+            letter-spacing: 1px; 
+        }
+        td { padding: 15px; border-bottom: 1px solid #eee; color: #2c3e50; }
+        
+        /* Action Buttons */
+        .btn { padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s; display: inline-block; }
+        .btn-add { background-color: #27ae60; color: white; }
+        .btn-view { color: #3498db; margin-right: 10px; }
+        .btn-remove { color: #e74c3c; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div>
+            <h2>LeasePro</h2>
+            <p style="margin-bottom: 5px;">Logged in as: <strong>{{ user.username }}</strong></p>
+            <p style="font-size: 0.8rem; color: #95a5a6; margin-top: 0;">Role: Landlord</p>
+            <hr style="border: 0; border-top: 1px solid #3e4f5f; margin: 20px 0;">
+            
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}" class="nav-link active">
+                    <i class="fas fa-home"></i> Dashboard Home
+                </a>
+                <a href="{% url 'add_property' %}" class="nav-link">
+                    <i class="fas fa-plus-circle"></i> List New Property
+                </a>
+            </div>
+        </div>
+        
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Secure Logout
+            </button>
+        </form>
+    </nav>
+
+    <main class="main-content">
+        <div class="header-flex">
+            <h1>Property Portfolio</h1>
+            <a href="{% url 'add_property' %}" class="btn btn-add">+ Add New Listing</a>
+        </div>
+
+        <div class="card">
+            <h3>Managed Properties</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Monthly Rent</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in properties %}
+                    <tr>
+                        <td><strong>{{ p.address }}</strong></td>
+                        <td>£{{ p.rent_amount }}</td>
+                        <td style="color: #7f8c8d;">{{ p.description|truncatewords:8 }}</td>
+                        <td>
+                            <a href="{% url 'property_detail' pk=p.pk %}" class="btn-view">View</a>
+                            <a href="{% url 'delete_property' pk=p.pk %}" class="btn-remove">Remove</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: #95a5a6;">
+                            You have no properties listed. Click "+ Add New Listing" to start.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

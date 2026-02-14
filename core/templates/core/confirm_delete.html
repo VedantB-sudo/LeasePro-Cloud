@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Property | LeasePro</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .confirm-card { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; padding: 40px; border-radius: 24px; text-align: center; max-width: 450px; }
+        .btn-confirm { background: #ef4444; color: white; padding: 12px 25px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin: 10px; }
+        .btn-cancel { background: #334155; color: white; padding: 12px 25px; text-decoration: none; border-radius: 12px; display: inline-block; margin: 10px; }
+    </style>
+</head>
+<body>
+    <div class="confirm-card">
+        <h2>Are you sure?</h2>
+        <p>You are about to delete <strong>{{ property.address }}</strong>. This action cannot be undone.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn-confirm">Yes, Delete Property</button>
+            <a href="{% url 'property_detail' pk=property.pk %}" class="btn-cancel">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
