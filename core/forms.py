@@ -9,14 +9,14 @@ class PropertyForm(forms.ModelForm):
         fields = ['address', 'rent_amount', 'description', 'image']
         widgets = {'description': forms.Textarea(attrs={'rows': 4}),}
 
-# This is the class your views.py is looking for
+# Registration Form
 class LeaseProSignupForm(UserCreationForm):
     ROLE_CHOICES = [
         ('landlord', 'Landlord'),
         ('tenant', 'Tenant'),
     ]
     
-    # Custom role selection field
+    # Ensure this is indented exactly 4 spaces (1 tab)
     role = forms.ChoiceField(
         choices=ROLE_CHOICES, 
         widget=forms.RadioSelect, 
@@ -25,18 +25,17 @@ class LeaseProSignupForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        # We define exactly which fields should appear in the form
         fields = ("username", "email")
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        role = self.cleaned_data.get('role')
+        # Ensure this matches the name of your ChoiceField!
+        selected_role = self.cleaned_data.get('role') 
         
-        # Mapping the radio button choice to your model Boolean fields
-        if role == 'landlord':
+        if selected_role == 'landlord':
             user.is_landlord = True
             user.is_tenant = False
-        elif role == 'tenant':
+        else:
             user.is_landlord = False
             user.is_tenant = True
             

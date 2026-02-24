@@ -5,19 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Landlord Dashboard | LeasePro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Base Layout */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            display: flex; 
-            background-color: #f8f9fa; 
+        /* Midnight Gold Brand Colors */
+        :root {
+            --bg-deep: #050a15;       /* Midnight Navy */
+            --bg-card: #0d1425;       /* Card Navy */
+            --accent-gold: #fbbf24;   /* Vivid Gold */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
         }
 
-        /* Sidebar Fix: Using Flexbox to push logout to bottom */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            background-color: var(--bg-deep); 
+            color: var(--text-main);
+        }
+
+        /* Sidebar Styling (Keeping your Flexbox structure) */
         .sidebar { 
             width: 260px; 
-            background: #2c3e50; 
+            background: var(--bg-card); 
             color: white; 
             height: 100vh; 
             position: fixed; 
@@ -25,18 +36,19 @@
             box-sizing: border-box; 
             display: flex; 
             flex-direction: column; 
-            justify-content: space-between; /* Spaced top and bottom */
+            justify-content: space-between; 
+            border-right: 1px solid var(--border);
         }
 
         .sidebar h2 { 
-            color: #3498db; 
+            color: var(--accent-gold); 
             margin-top: 0;
             margin-bottom: 25px; 
-            border-bottom: 1px solid #3e4f5f; 
+            border-bottom: 1px solid var(--border); 
             padding-bottom: 10px; 
+            font-weight: 800;
         }
 
-        /* Nav Links Styling */
         .nav-links {
             display: flex;
             flex-direction: column;
@@ -45,29 +57,29 @@
 
         .nav-link {
             display: block;
-            color: #bdc3c7;
+            color: var(--text-muted);
             text-decoration: none;
             padding: 12px 15px;
             border-radius: 8px;
             transition: 0.3s;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .nav-link:hover {
-            background: rgba(52, 152, 219, 0.1);
-            color: #3498db;
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--accent-gold);
         }
 
         .nav-link.active {
-            background: #3498db;
-            color: white;
+            background: var(--accent-gold);
+            color: var(--bg-deep);
         }
 
-        /* Logout Button */
+        /* Logout Button Styles */
         .logout-btn { 
-            background: #c0392b; 
-            color: white; 
-            border: none; 
+            background: rgba(239, 68, 68, 0.1); 
+            color: #ef4444; 
+            border: 1px solid rgba(239, 68, 68, 0.2); 
             padding: 12px; 
             width: 100%; 
             cursor: pointer; 
@@ -77,14 +89,17 @@
         }
 
         .logout-btn:hover {
-            background: #a93226;
+            background: #ef4444;
+            color: white;
         }
 
-        /* Main Content */
+        /* Main Content Layout */
         .main-content { 
             flex: 1; 
             margin-left: 260px; 
             padding: 40px; 
+            background: radial-gradient(circle at 50% -20%, #1e293b 0%, var(--bg-deep) 70%);
+            min-height: 100vh;
         }
 
         .header-flex { 
@@ -96,29 +111,37 @@
 
         /* Card & Table Styling */
         .card { 
-            background: white; 
+            background: var(--bg-card); 
             padding: 25px; 
             border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            border: 1px solid var(--border);
         }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        
         th { 
             text-align: left; 
             padding: 15px; 
-            background-color: #f2f4f6; 
-            color: #7f8c8d; 
+            background-color: var(--bg-deep); 
+            color: var(--accent-gold); 
             text-transform: uppercase; 
             font-size: 0.75rem; 
             letter-spacing: 1px; 
+            border-bottom: 1px solid var(--border);
         }
-        td { padding: 15px; border-bottom: 1px solid #eee; color: #2c3e50; }
+        
+        td { padding: 15px; border-bottom: 1px solid var(--border); color: var(--text-main); }
         
         /* Action Buttons */
         .btn { padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.3s; display: inline-block; }
-        .btn-add { background-color: #27ae60; color: white; }
-        .btn-view { color: #3498db; margin-right: 10px; }
-        .btn-remove { color: #e74c3c; }
+        
+        .btn-add { background-color: var(--accent-gold); color: var(--bg-deep); }
+        .btn-add:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        
+        .btn-view { color: var(--accent-gold); margin-right: 10px; font-weight: 700; }
+        .btn-remove { color: #ef4444; font-weight: 700; }
+        .btn-view:hover, .btn-remove:hover { text-decoration: underline; }
 
     </style>
 </head>
@@ -128,8 +151,8 @@
         <div>
             <h2>LeasePro</h2>
             <p style="margin-bottom: 5px;">Logged in as: <strong>{{ user.username }}</strong></p>
-            <p style="font-size: 0.8rem; color: #95a5a6; margin-top: 0;">Role: Landlord</p>
-            <hr style="border: 0; border-top: 1px solid #3e4f5f; margin: 20px 0;">
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Role: Landlord</p>
+            <hr style="border: 0; border-top: 1px solid var(--border); margin: 20px 0;">
             
             <div class="nav-links">
                 <a href="{% url 'dashboard' %}" class="nav-link active">
@@ -169,9 +192,9 @@
                 <tbody>
                     {% for p in properties %}
                     <tr>
-                        <td><strong>{{ p.address }}</strong></td>
-                        <td>£{{ p.rent_amount }}</td>
-                        <td style="color: #7f8c8d;">{{ p.description|truncatewords:8 }}</td>
+                        <td><strong style="color: white;">{{ p.address }}</strong></td>
+                        <td style="color: var(--accent-gold); font-weight: bold;">£{{ p.rent_amount }}</td>
+                        <td style="color: var(--text-muted);">{{ p.description|truncatewords:8 }}</td>
                         <td>
                             <a href="{% url 'property_detail' pk=p.pk %}" class="btn-view">View</a>
                             <a href="{% url 'delete_property' pk=p.pk %}" class="btn-remove">Remove</a>
@@ -179,7 +202,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 40px; color: #95a5a6;">
+                        <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">
                             You have no properties listed. Click "+ Add New Listing" to start.
                         </td>
                     </tr>

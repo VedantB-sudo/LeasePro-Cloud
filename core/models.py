@@ -12,6 +12,7 @@ class Property(models.Model):
     rent_amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     image = models.ImageField(upload_to='property_images/', null=True, blank=True)
+    objects = models.Manager() # Explicitly defining the manager
 
     class Meta:
         verbose_name = "Property"

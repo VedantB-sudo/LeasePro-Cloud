@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Property
-from .forms import PropertyForm, LeaseProSignupForm # Consolidated imports
+from .forms import PropertyForm, LeaseProSignupForm
+from django.shortcuts import render
 
 def home(request):
     if request.user.is_authenticated:
@@ -12,14 +13,15 @@ def home(request):
 def signup(request):
     if request.method == 'POST':
         form = LeaseProSignupForm(request.POST)
-        if form.is_valid(): 
-            form.save()
-            messages.success(request, 'Account created successfully!')
+        if form.is_valid():
+            # This triggers the 'save' method you wrote in forms.py 
+            # which maps the radio button to the boolean flags.
+            user = form.save() 
+            
+            messages.success(request, f'Account created for {user.username}!')
             return redirect('login')
         else:
-            # IMPORTANT: This prints the errors to your VS Code / CMD terminal
-            # Check here if the password was too short or email already exists!
-            print(f"Form Errors: {form.errors}") 
+            print(f"Form Errors: {form.errors}")
     else:
         form = LeaseProSignupForm()
     return render(request, 'core/signup.html', {'form': form})
@@ -104,8 +106,10 @@ def edit_property(request, pk):
 
 @login_required
 def dashboard(request):
-    properties = Property.objects.filter(landlord=request.user)
-    return render(request, 'core/dashboard.html', {'properties': properties})
+    if request.user.is_landlord:
+        return render(request, 'core/dashboard.html')
+    else:
+        return render(request, 'core/tenant_dashboard.html')
 
 @login_required
 def tenant_dashboard(request):

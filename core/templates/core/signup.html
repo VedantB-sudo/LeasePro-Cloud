@@ -2,14 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | LeasePro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --accent-green: #10b981;
-            --accent-blue: #2563eb;
-            --text-white: #ffffff;
-            --text-muted: #cbd5e1;
+            --bg-deep: #050a15;       /* Midnight Navy */
+            --bg-card: #0d1425;       /* Card Navy */
+            --accent-gold: #fbbf24;   /* Vivid Gold */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+            --error-red: #ef4444;
         }
 
         body {
@@ -18,141 +23,160 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.2) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
-                        #0f172a;
-            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            /* Matching the landing page gradient */
+            background: radial-gradient(circle at 50% -20%, #1e293b 0%, var(--bg-deep) 70%);
+            color: var(--text-main);
         }
 
         .auth-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            background-clip: padding-box; 
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px;
-            padding: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 50px 40px;
             width: 100%;
-            max-width: 480px; 
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-            color: var(--text-white);
+            max-width: 450px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        h2 { text-align: center; margin: 0 0 10px 0; font-weight: 600; }
-        .subtitle { text-align: center; color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem; }
+        h2 { 
+            text-align: center; 
+            margin: 0 0 10px 0; 
+            font-weight: 700; 
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+        }
 
-        /* Fix for Label/Text Visibility */
+        .subtitle { 
+            text-align: center; 
+            color: var(--text-muted); 
+            margin-bottom: 35px; 
+            font-size: 0.95rem; 
+        }
+
+        /* Form Text & Labels */
         form p { 
             text-align: left; 
-            color: var(--text-white) !important; 
-            margin-bottom: 15px; 
-            font-size: 0.9rem; 
+            color: var(--text-main); 
+            margin-bottom: 20px; 
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .helptext, .helptext ul, li {
             color: var(--text-muted) !important;
             font-size: 0.75rem;
-            margin-top: 4px;
+            margin-top: 6px;
             list-style: none;
             padding-left: 0;
+            font-weight: 400;
         }
 
-        /* Input Styling */
+        /* High-Contrast Inputs */
         input:not([type="radio"]), select {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             margin-top: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            background: var(--bg-deep);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             color: white;
             box-sizing: border-box;
             font-family: inherit;
+            transition: border-color 0.3s;
         }
 
-        /* Horizontal Radio Button Alignment Fix */
+        input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        /* Horizontal Radio Fix */
         form ul {
             display: flex !important;
             flex-direction: row !important;
-            justify-content: center !important;
-            gap: 30px;
-            padding: 0;
+            justify-content: flex-start !important;
+            gap: 25px;
+            padding: 10px 0;
             list-style: none;
+            margin: 0;
         }
 
         form ul li {
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: white !important;
+            gap: 8px;
+            color: var(--text-main) !important;
+            font-weight: 500;
         }
 
         form input[type="radio"] {
             width: auto !important;
-            margin: 0 !important;
+            accent-color: var(--accent-gold);
         }
 
-        /* Button Styling */
+        /* Vivid Gold Button */
         button {
             width: 100%;
-            padding: 15px;
-            background: var(--accent-green);
-            color: white;
+            padding: 16px;
+            background: var(--accent-gold);
+            color: var(--bg-deep);
             border: none;
-            border-radius: 12px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
-            margin-top: 15px;
+            margin-top: 20px;
             font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         button:hover { 
             transform: translateY(-2px); 
             filter: brightness(1.1); 
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 10px 15px rgba(251, 191, 36, 0.2);
         }
 
         .back-link { 
             display: block; 
             text-align: center; 
-            margin-top: 25px; 
+            margin-top: 30px; 
             color: var(--text-muted); 
             text-decoration: none; 
-            font-size: 0.85rem; 
+            font-size: 0.9rem;
+            transition: color 0.3s;
         }
-        .back-link:hover { color: white; }
 
+        .back-link:hover { color: var(--accent-gold); }
+
+        /* Errors */
         .error-box {
-            background: rgba(239, 68, 68, 0.15); /* Soft Red */
-            border: 1px solid #ef4444;
-            border-radius: 12px;
-            padding: 15px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error-red);
+            border-radius: 8px;
+            padding: 12px;
             margin-bottom: 20px;
             color: #fca5a5;
             font-size: 0.85rem;
-            text-align: left;
         }
 
-        .error-box p {
-            margin: 5px 0 0 0 !important;
-            color: #fca5a5 !important;  
-        }
+        .error-box p { margin: 0 !important; color: #fca5a5 !important; font-weight: 400; }
     </style>
 </head>
 <body>
 
     <div class="auth-card">
-        <h2>Join LeasePro</h2>
-        <div class="subtitle">Secure Property Management Starts Here</div>
+        <h2>LeasePro</h2>
+        <div class="subtitle">Secure Registration Portal</div>
         
         <form method="post" action="{% url 'signup' %}">
             {% csrf_token %}
+            
             {% if form.non_field_errors %}
                 <div class="error-box">
                     {% for error in form.non_field_errors %}
-                        <p><i class="fas fa-exclamation-triangle"></i> {{ error }}</p>
+                        <p><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -167,12 +191,13 @@
                     </div>
                 {% endif %}
             {% endfor %}
+
             {{ form.as_p }}
+
             <button type="submit">Create Account</button>
         </form>
 
-        <a href="{% url 'login' %}" class="back-link">Already have an account? Login here</a>
+        <a href="{% url 'login' %}" class="back-link">Already a member? Sign in</a>
     </div>
-
 </body>
 </html>

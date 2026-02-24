@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--@k9g5=!mx@$wl^p!od%^_flmr+x7(3o_dhhn=ftb3x#cc)+f1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['638c2b93c5494c41b570b402e16f38d0.vfs.cloud9.us-east-1.amazonaws.com']
 
 
 # Application definition
@@ -74,7 +74,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # Make sure this is exactly right
         'NAME': 'leasepro_db',
-        'USER': 'root',
+        'USER': 'VedantB-sudo',
         'PASSWORD': 'admin123',
         'HOST': '127.0.0.1',
         'PORT': '3306',
@@ -111,9 +111,17 @@ AUTH_USER_MODEL = 'core.User'
 LOGIN_REDIRECT_URL = 'dashboard'
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-LOGIN_REDIRECT_URL = 'login_success'
+
 
 import os
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (Uploaded property images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://638c2b93c5494c41b570b402e16f38d0.vfs.cloud9.us-east-1.amazonaws.com'
+]

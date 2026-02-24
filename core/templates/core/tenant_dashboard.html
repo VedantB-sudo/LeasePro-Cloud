@@ -3,90 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenant Dashboard | LeasePro</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Explore Properties | LeasePro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; background-color: #f8f9fa; }
-        
-        /* Fixed Sidebar Architecture */
-        .sidebar { 
-            width: 260px; background: #2c3e50; color: white; height: 100vh; 
-            position: fixed; padding: 25px; box-sizing: border-box; 
-            display: flex; flex-direction: column; justify-content: space-between; 
-        }
-        
-        .sidebar h2 { color: #3498db; border-bottom: 1px solid #3e4f5f; padding-bottom: 10px; }
-        
-        .nav-link { 
-            display: block; color: #bdc3c7; text-decoration: none; 
-            padding: 12px 15px; border-radius: 8px; transition: 0.3s; 
-        }
-        
-        .nav-link:hover, .nav-link.active { background: #3498db; color: white; }
-
-        .logout-btn { 
-            background: #c0392b; color: white; border: none; padding: 12px; 
-            width: 100%; cursor: pointer; border-radius: 8px; font-weight: bold; 
+        :root {
+            --bg-deep: #050a15;
+            --bg-card: #0d1425;
+            --accent-gold: #fbbf24;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+            --accent-red: #ef4444;
         }
 
-        /* Content Area */
-        .main-content { flex: 1; margin-left: 260px; padding: 40px; }
-        
-        /* Property Grid */
-        .property-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 25px; margin-top: 20px; 
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 50% -20%, #1e293b 0%, var(--bg-deep) 80%);
+            color: var(--text-main);
+            padding: 50px 5%;
+            min-height: 100vh;
         }
-        
-        .property-card { 
-            background: white; padding: 20px; border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; 
+
+        /* Header Layout */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
-        
-        .property-card:hover { transform: translateY(-5px); }
-        
-        .price { color: #27ae60; font-size: 1.4rem; font-weight: bold; }
-        .btn-view { 
-            display: block; text-align: center; background: #3498db; 
-            color: white; padding: 10px; border-radius: 6px; 
-            text-decoration: none; margin-top: 15px; 
+
+        .header h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            letter-spacing: -1.5px;
+            margin: 0;
+            background: linear-gradient(to right, #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Landlord-Only Add Button */
+        .btn-add-listing {
+            background: var(--accent-gold);
+            color: var(--bg-deep);
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.1);
+        }
+
+        .btn-add-listing:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+            box-shadow: 0 15px 25px rgba(251, 191, 36, 0.2);
+        }
+
+        /* Grid & Cards */
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 35px;
+        }
+
+        .property-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: 0.4s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .property-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-gold);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            background: #1e293b;
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-content { padding: 25px; flex-grow: 1; }
+
+        .price-tag {
+            color: var(--accent-gold);
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .price-tag span { font-size: 0.9rem; font-weight: 400; color: var(--text-muted); }
+
+        .address { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .address i { color: var(--accent-gold); font-size: 1rem; }
+
+        .description { 
+            color: var(--text-muted); 
+            font-size: 0.95rem; 
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .btn-view {
+            display: block;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            padding: 14px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .btn-view:hover {
+            background: var(--text-main);
+            color: var(--bg-deep);
+        }
+
+        /* Logout Utility */
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 11px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-red);
+            color: white;
+            border-color: var(--accent-red);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 0;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div>
-            <h2>LeasePro</h2>
-            <p>Logged in as: <strong>{{ user.username }}</strong></p>
-            <p style="font-size: 0.8rem; color: #95a5a6;">Role: Tenant</p>
-            <hr style="border: 0; border-top: 1px solid #3e4f5f; margin: 20px 0;">
-            <div class="nav-links">
-                <a href="{% url 'tenant_dashboard' %}" class="nav-link active">
-                    <i class="fas fa-search"></i> Browse Properties
-                </a>
-            </div>
-        </div>
+    <header class="header">
+        <h1>Explore Properties</h1>
         
-        <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="logout-btn">Secure Logout</button>
-        </form>
-    </nav>
-
-    <main class="main-content">
-        <h1>Available Listings</h1>
-        <div class="property-grid">
-            {% for p in properties %}
-            <div class="property-card">
-                <div class="price">£{{ p.rent_amount }}/mo</div>
-                <h3><i class="fas fa-map-marker-alt"></i> {{ p.address }}</h3>
-                <p>{{ p.description|truncatewords:15 }}</p>
-                <a href="{% url 'property_detail' pk=p.pk %}" class="btn-view">View Full Details</a>
-            </div>
-            {% endfor %}
+        <div class="header-actions">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn" onclick="return confirm('Log out of LeasePro?')">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
         </div>
-    </main>
+    </header>
+
+    <div class="property-grid">
+        {% for property in properties %}
+        <div class="property-card">
+            <div class="card-image">
+                {% if property.image %}
+                    <img src="{{ property.image.url }}" alt="Property">
+                {% else %}
+                    <div style="height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.2;">
+                        <i class="fas fa-building fa-4x"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="card-content">
+                <div class="price-tag">£{{ property.rent_amount }}<span>/mo</span></div>
+                <div class="address"><i class="fas fa-location-dot"></i> {{ property.address }}</div>
+                <p class="description">{{ property.description|truncatewords:18 }}</p>
+                
+                <a href="{% url 'property_detail' pk=property.pk %}" class="btn-view">View Details</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="fas fa-search fa-3x" style="margin-bottom: 20px; opacity: 0.1;"></i>
+            <p>No listings match your criteria right now.</p>
+        </div>
+        {% endfor %}
+    </div>
 
 </body>
 </html>
