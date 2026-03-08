@@ -13,7 +13,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          # REQUIRED: Add this to the test job to fix exit code 128
+          # REQUIRED: Disable submodules for the test job
           submodules: false
 
       - name: Set up Python 3.11
@@ -55,7 +55,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          # Keep this here as well
+          # REQUIRED: Disable submodules for the deploy job
           submodules: false
 
       - name: Generate Deployment Package
