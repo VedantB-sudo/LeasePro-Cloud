@@ -1,4 +1,4 @@
-njobs:
+jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
