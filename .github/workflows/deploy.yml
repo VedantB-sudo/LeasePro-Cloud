@@ -53,9 +53,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          # Explicitly tell GitHub not to look for submodules
+          # ADD THIS LINE HERE TOO
           submodules: false 
-          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
 
       - name: Generate Deployment Package
         # This will now correctly zip your root-level files
