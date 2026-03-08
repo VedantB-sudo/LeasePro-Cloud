@@ -8,11 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: . # Aligned to root
-    
+        working-directory: .
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          # ADDED to prevent exit code 128 in the test job
+          submodules: false 
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
@@ -28,6 +31,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install Pillow
+          # Pipeline will now find this at the root
           pip install -r requirements.txt
           pip install bandit
 
@@ -47,19 +51,15 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: . # Changed from LeasePro-Cloud to root
+        working-directory: .
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          submodules: false 
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+          submodules: false
 
       - name: Generate Deployment Package
-        # This will now correctly zip your root-level files
         run: zip -r deploy.zip . -x '*.git*'
 
       - name: Deploy to AWS Elastic Beanstalk
