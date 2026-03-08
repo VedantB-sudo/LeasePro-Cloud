@@ -9,11 +9,8 @@ jobs:
     defaults:
       run:
         # Step into the app folder where manage.py lives
-<<<<<<< HEAD
-        working-directory: .
-=======
         working-directory: LeasePro-Cloud
->>>>>>> a740bc8 (Fix: Added Pillow dependency and stabilized directory pathing)
+        working-directory: .
     
     steps:
       - name: Checkout Repository
@@ -78,3 +75,4 @@ jobs:
       - name: Install Pillow
         run: pip install Pillow
 >>>>>>> a740bc8 (Fix: Added Pillow dependency and stabilized directory pathing)
+# Force Refresh
