@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Remove the './' prefix to resolve the path correctly
-        working-directory: .
+        # Set to the current root directory to fix the pathing error
+        working-directory: . 
     
     steps:
       - name: Checkout Repository
@@ -22,7 +22,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install System Dependencies
-        # This will now correctly execute in the application root
+        # This will now correctly execute in the workspace root
         run: |
           sudo apt-get update
           sudo apt-get install -y pkg-config default-libmysqlclient-dev build-essential
