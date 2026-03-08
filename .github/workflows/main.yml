@@ -9,7 +9,7 @@ jobs:
     defaults:
       run:
         # Step into the app folder where manage.py lives
-        working-directory: LeasePro-Cloud
+        working-directory: .
     
     steps:
       - name: Checkout Repository
