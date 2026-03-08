@@ -9,13 +9,12 @@ jobs:
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          # ADDED to prevent exit code 128 in the test job
-          submodules: false 
+          # REQUIRED: Add this to the test job to fix exit code 128
+          submodules: false
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
@@ -52,11 +51,11 @@ jobs:
     defaults:
       run:
         working-directory: .
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
+          # Keep this here as well
           submodules: false
 
       - name: Generate Deployment Package
