@@ -1,11 +1,14 @@
+name: CI/CD Pipeline to AWS Elastic Beanstalk
+
+on:
+  workflow_dispatch:  # This allows you to run it manually from the Actions tab
+
 jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Change this to the root directory where requirements.txt and manage.py are
-        working-directory: . 
-    
+        working-directory: .
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
