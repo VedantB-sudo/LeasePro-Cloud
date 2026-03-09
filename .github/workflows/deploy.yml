@@ -39,9 +39,9 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          session_token: ${{ secrets.AWS_SESSION_TOKEN }} # Required for AWS Academy
-          application_name: LeasePro-Cloud
-          environment_name: Leasepro-cloud-env # Match your EB environment name
+          session_token: ${{ secrets.AWS_SESSION_TOKEN }} 
+          application_name: ${{ secrets.EB_APPLICATION_NAME }}
+          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
           version_label: ${{ github.sha }}
-          region: us-east-1 # Change to your Lab region (e.g., us-east-1)
+          region: ${{ secrets.AWS_REGION }}
           deployment_package: deploy.zip
