@@ -18,13 +18,11 @@ jobs:
           python-version: '3.11'
 
       - name: Install Dependencies
+        working-directory: ./LeasePro-Cloud 
         run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config default-libmysqlclient-dev build-essential
           python -m pip install --upgrade pip
-          pip install Pillow  # Add this line explicitly
+          pip install Pillow
           pip install -r requirements.txt
-          pip install bandit
 
       - name: Run Security Scan & Tests
         run: |
