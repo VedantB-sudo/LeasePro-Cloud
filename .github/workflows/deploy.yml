@@ -10,7 +10,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          submodules: false
+          submodules: false # Fixes Exit Code 128
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
@@ -19,8 +19,6 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config default-libmysqlclient-dev build-essential
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install bandit
@@ -42,18 +40,13 @@ jobs:
       - name: Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          # Use the Public IP from your EC2 Console
           host: ${{ secrets.EC2_PUBLIC_IP }}
-          # 'ubuntu' is the default user for Ubuntu AMIs
           username: ubuntu 
-          # This is your vockey content
-          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
-          # This pulls the code and restarts the server
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }} # This is your vockey content
           script: |
             cd /home/ubuntu/LeasePro-Cloud
             git pull origin main
             source venv/bin/activate
             pip install -r requirements.txt
             python manage.py migrate
-            python manage.py collectstatic --noinput
             sudo systemctl restart gunicorn
