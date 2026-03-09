@@ -1,4 +1,4 @@
-name: CI/CD Pipeline to AWS Elastic Beanstalk
+name: CI/CD Pipeline to AWS EC2 via SSH
 
 on:
   workflow_dispatch:
@@ -6,14 +6,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          # REQUIRED: Disable submodules for the test job
           submodules: false
 
       - name: Set up Python 3.11
@@ -21,54 +17,43 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install System Dependencies
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y pkg-config default-libmysqlclient-dev build-essential
-          
-      - name: Install Python Dependencies
-        run: |
           python -m pip install --upgrade pip
-          pip install Pillow
-          # Pipeline will now find this at the root
           pip install -r requirements.txt
           pip install bandit
 
-      - name: Run Security Scan (Bandit)
-        run: bandit -r . -f txt -o security_report.txt || true
-
-      - name: Run Django Tests
+      - name: Run Security Scan & Tests
+        run: |
+          bandit -r . -f txt -o security_report.txt || true
+          python manage.py test
         env:
           DB_ENGINE: django.db.backends.sqlite3
           SECRET_KEY: test_secret_key
           DEBUG: 1
-        run: python manage.py test
 
   deploy:
-    name: Deploy to Elastic Beanstalk
+    name: Deploy to EC2 via SSH
     needs: test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          # REQUIRED: Disable submodules for the deploy job
-          submodules: false
-
-      - name: Generate Deployment Package
-        run: zip -r deploy.zip . -x '*.git*'
-
-      - name: Deploy to AWS Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v22
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          session_token: ${{ secrets.AWS_SESSION_TOKEN }}
-          application_name: ${{ secrets.EB_APPLICATION_NAME }}
-          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
-          version_label: "app-${{ github.sha }}"
-          region: ${{ secrets.AWS_REGION }}
-          deployment_package: deploy.zip
+          # Use the Public IP from your EC2 Console
+          host: ${{ secrets.EC2_PUBLIC_IP }}
+          # 'ubuntu' is the default user for Ubuntu AMIs
+          username: ubuntu 
+          # This is your vockey content
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          # This pulls the code and restarts the server
+          script: |
+            cd /home/ubuntu/LeasePro-Cloud
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            python manage.py migrate
+            python manage.py collectstatic --noinput
+            sudo systemctl restart gunicorn
