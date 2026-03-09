@@ -16,6 +16,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Dependencies
+        # This points to the correct nested application root
         working-directory: ./LeasePro-Cloud 
         run: |
           python -m pip install --upgrade pip
