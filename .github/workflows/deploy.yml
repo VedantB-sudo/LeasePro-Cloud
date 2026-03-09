@@ -18,21 +18,19 @@ jobs:
           python-version: '3.11'
 
       - name: Install Dependencies
-        working-directory: .
+        # Use '.' if your files are in the main repo root after checkout
+        working-directory: . 
         run: |
           python -m pip install --upgrade pip
           pip install Pillow bandit
           pip install -r requirements.txt
 
       - name: Run Security Scan & Tests
-        working-directory: ./LeasePro-Cloud # Added this to find manage.py
+        working-directory: .
         run: |
+          # Bandit scan of the application code
           bandit -r . -f txt -o security_report.txt || true
           python manage.py test
-        env:
-          DB_ENGINE: django.db.backends.sqlite3
-          SECRET_KEY: test_secret_key
-          DEBUG: 1
 
   deploy:
     name: Deploy to EC2 via SSH
