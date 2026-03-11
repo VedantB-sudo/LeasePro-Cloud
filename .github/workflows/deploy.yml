@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./LeasePro-Cloud
+        working-directory: ./LeasePro-Cloudfolder
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
     needs: lint
     defaults:
       run:
-        working-directory: ./LeasePro-Cloud
+        working-directory: ./LeasePro-Cloudfolder
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -59,7 +59,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate Deployment Package
-        # This creates deploy.zip inside the LeasePro-Cloud folder
         run: zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
       - name: Deploy to AWS Elastic Beanstalk
@@ -72,5 +71,4 @@ jobs:
           environment_name: "Incidentmanagement-env"
           region: "us-east-1"
           version_label: "app-${{ github.sha }}"
-          # Adjusted to just 'deploy.zip' because the runner is already in LeasePro-Cloud
-          deployment_package: LeasePro-Cloud/deploy.zip
+          deployment_package: LeasePro-Cloudfolder/deploy.zip

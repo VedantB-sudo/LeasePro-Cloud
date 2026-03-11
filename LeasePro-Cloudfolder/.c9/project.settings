@@ -38,8 +38,8 @@
     "workspace": {
         "@folders": [
             {
-                "name": "LeasePro-Cloudfolder",
-                "path": "/LeasePro-Cloudfolder"
+                "name": "LeasePro-Cloud",
+                "path": "/LeasePro-Cloud"
             }
         ]
     }
