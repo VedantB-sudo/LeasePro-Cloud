@@ -43,5 +43,11 @@ jobs:
 
       - name: Run pylint
         run: |
-          # This find command handles both root or subfolder Python files
-          pylint $(find . -name "*.py" -not -path "*/venv/*")
+          # Set PYTHONPATH so Pylint can find your Django apps correctly
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/LeasePro-Cloud
+          
+          # Run pylint using the django plugin and pointing to your specific settings
+          pylint $(find . -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*") \
+          --load-plugins pylint_django \
+          --django-settings-module=core.settings \
+          --fail-under=5.0

@@ -31,7 +31,6 @@ jobs:
       - name: Run Pylint
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          # Pylint scans the directory for Python files
           pylint $(find . -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*") \
           --load-plugins pylint_django \
           --django-settings-module=core.settings \
@@ -60,6 +59,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate Deployment Package
+        # This creates deploy.zip inside the LeasePro-Cloud folder
         run: zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
       - name: Deploy to AWS Elastic Beanstalk
@@ -72,4 +72,5 @@ jobs:
           environment_name: "Incidentmanagement-env"
           region: "us-east-1"
           version_label: "app-${{ github.sha }}"
+          # Adjusted to just 'deploy.zip' because the runner is already in LeasePro-Cloud
           deployment_package: LeasePro-Cloud/deploy.zip
