@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Updated to your specific folder name
         working-directory: ./LeasePro-Cloudfolder
     steps:
       - name: Checkout Repository
@@ -31,8 +30,8 @@ jobs:
 
       - name: Run Pylint
         run: |
+          # Set PYTHONPATH so Pylint can find your Django config correctly
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          # Scans for Python files while excluding the virtual environment and migrations
           pylint $(find . -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*") \
           --load-plugins pylint_django \
           --django-settings-module=core.settings \
@@ -42,7 +41,7 @@ jobs:
   deploy:
     name: Deploy to Elastic Beanstalk
     runs-on: ubuntu-latest
-    needs: lint
+    needs: lint  # Deployment will only start if 'lint' completes successfully
     defaults:
       run:
         working-directory: ./LeasePro-Cloudfolder
@@ -61,7 +60,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Generate Deployment Package
-        # Zips the current directory while excluding git, venv, and c9 files
+        # This zips the content of LeasePro-Cloudfolder and places the zip in the root
         run: zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
       - name: Deploy to AWS Elastic Beanstalk
@@ -74,5 +73,4 @@ jobs:
           environment_name: "Incidentmanagement-env"
           region: "us-east-1"
           version_label: "app-${{ github.sha }}"
-          # Path to the zip file created in the previous step
           deployment_package: LeasePro-Cloudfolder/deploy.zip
