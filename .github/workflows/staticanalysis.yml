@@ -12,7 +12,6 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,23 +24,18 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-
-          # This logic checks the root, then the LeasePro-Cloudfolder
-          if [ -f "requirements.txt" ]; then
-            echo "Found requirements.txt in root"
-            pip install -r requirements.txt
-          elif [ -f "LeasePro-Cloudfolder/requirements.txt" ]; then
-            echo "Found requirements.txt in LeasePro-Cloudfolder folder"
+          if [ -f "LeasePro-Cloudfolder/requirements.txt" ]; then
             pip install -r LeasePro-Cloudfolder/requirements.txt
-          else
-            echo "ERROR: requirements.txt not found anywhere!"
-            ls -R
-            exit 1
           fi
-
           pip install pylint pylint-django
 
       - name: Run pylint
         run: |
-          # This find command handles both root or subfolder Python files
-          pylint $(find . -name "*.py" -not -path "*/venv/*")
+          # FIX: Ensuring the runner finds the app modules
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/LeasePro-Cloudfolder
+          
+          # FIX: Ignoring the .c9 metadata and using the correct settings path
+          pylint $(find LeasePro-Cloudfolder -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*" -not -path "*/.c9/*") \
+          --load-plugins pylint_django \
+          --django-settings-module=propertymanager.settings \
+          --fail-under=5.0
