@@ -26,12 +26,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
+          # This logic checks the root, then your specific project subfolder
           if [ -f "requirements.txt" ]; then
+            echo "Found requirements.txt in root"
             pip install -r requirements.txt
           elif [ -f "LeasePro-Cloudfolder/requirements.txt" ]; then
+            echo "Found requirements.txt in LeasePro-Cloudfolder folder"
             pip install -r LeasePro-Cloudfolder/requirements.txt
           else
-            echo "ERROR: requirements.txt not found!"
+            echo "ERROR: requirements.txt not found anywhere!"
+            ls -R
             exit 1
           fi
 
@@ -39,7 +43,10 @@ jobs:
 
       - name: Run pylint
         run: |
+          # Set PYTHONPATH so Pylint can find your Django config correctly
           export PYTHONPATH=$PYTHONPATH:$(pwd)/LeasePro-Cloudfolder
+          
+          # Run pylint using the django plugin and pointing to your specific settings
           pylint $(find . -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*") \
           --load-plugins pylint_django \
           --django-settings-module=core.settings \
