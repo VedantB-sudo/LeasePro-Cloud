@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Adjusted to your project's internal directory
-        working-directory: ./LeasePro-Cloud/LeasePro-Cloud
+        # Corrected to point to your inner application folder
+        working-directory: ./LeasePro-Cloud
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -45,8 +45,8 @@ jobs:
     needs: lint  # Deployment will only start if 'lint' completes successfully
     defaults:
       run:
-        # Adjusted to your project's internal directory
-        working-directory: ./LeasePro-Cloud/LeasePro-Cloud
+        # Corrected to point to your inner application folder
+        working-directory: ./LeasePro-Cloud
  
     steps:
       - name: Checkout Repository
@@ -63,7 +63,7 @@ jobs:
           pip install -r requirements.txt
  
       - name: Generate Deployment Package
-        # This zips the content of LeasePro-Cloud and places the zip in the root
+        # This zips the inner LeasePro-Cloud content for deployment
         run: zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
  
       - name: Deploy to AWS Elastic Beanstalk
