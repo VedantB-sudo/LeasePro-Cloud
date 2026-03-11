@@ -12,6 +12,7 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,14 +23,25 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        working-directory: ./LeasePro-Cloud
         run: |
           python -m pip install --upgrade pip
-          pip install pylint pylint-django
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run Pylint
-        working-directory: ./LeasePro-Cloud
+          # This logic checks the root, then your project subfolder
+          if [ -f "requirements.txt" ]; then
+            echo "Found requirements.txt in root"
+            pip install -r requirements.txt
+          elif [ -f "LeasePro-Cloud/requirements.txt" ]; then
+            echo "Found requirements.txt in LeasePro-Cloud folder"
+            pip install -r LeasePro-Cloud/requirements.txt
+          else
+            echo "ERROR: requirements.txt not found anywhere!"
+            ls -R
+            exit 1
+          fi
+
+          pip install pylint pylint-django
+
+      - name: Run pylint
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)
-          pylint --load-plugins pylint_django --django-settings-module=LeasePro-Cloud.settings . --exit-zero
+          # This find command handles both root or subfolder Python files
+          pylint $(find . -name "*.py" -not -path "*/venv/*")
