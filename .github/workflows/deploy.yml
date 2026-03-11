@@ -1,19 +1,56 @@
 name: CI/CD Pipeline to AWS Elastic Beanstalk
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  security_scan:
-    name: Static Security Analysis (Bandit)
-    # Removed dependency on 'test'
+  # --- LAYER 1: STATIC TESTING & SECURITY ---
+  lint:
+    name: Code Quality (Pylint)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Matches your nested application root
+        working-directory: ./LeasePro-Cloud
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pylint pylint-django
+
+      - name: Run Pylint
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          # Specifically points to your project settings and excludes venv
+          pylint $(find . -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*") \
+          --load-plugins pylint_django \
+          --django-settings-module=LeasePro-Cloud.settings \
+          --fail-under=5.0
+
+  security_scan:
+    name: Static Security Analysis (Bandit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./LeasePro-Cloud
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -21,54 +58,33 @@ jobs:
         run: pip install bandit
 
       - name: Run Bandit Scan
-        working-directory: ./LeasePro-Cloud
         run: |
           bandit -r . -f txt -o bandit_report.txt || true
 
       - name: Upload Security Artifact
-        uses: actions/upload-artifact@v4 
+        uses: actions/upload-artifact@v4
         with:
           name: security-audit
           path: ./LeasePro-Cloud/bandit_report.txt
 
-  lint:
-    name: Code Quality (Pylint)
-    # Removed dependency on 'test'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install Linting Dependencies
-        working-directory: ./LeasePro-Cloud
-        run: |
-          python -m pip install --upgrade pip
-          pip install pylint pylint-django
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Run Pylint
-        working-directory: ./LeasePro-Cloud
-        run: |
-          pylint --load-plugins pylint_django --django-settings-module=LeasePro-Cloud.settings . --exit-zero
-
+  # --- LAYER 2: DEPLOYMENT ---
   deploy:
-    name: Cloud Deployment
-    # Requires security and quality scans to pass before proceeding
-    needs: [security_scan, lint]
+    name: Deploy to Elastic Beanstalk
     runs-on: ubuntu-latest
+    # Deployment starts only if both quality and security jobs pass
+    needs: [lint, security_scan]
+    defaults:
+      run:
+        working-directory: ./LeasePro-Cloud
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generate Deployment Package
-        run: zip -r deploy.zip . -x "*.git*" "venv/*"
+        # Zips the inner directory content and excludes environment-specific folders
+        run: zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
-      - name: Deploy to EB
+      - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -76,6 +92,6 @@ jobs:
           session_token: ${{ secrets.AWS_SESSION_TOKEN }} 
           application_name: ${{ secrets.EB_APPLICATION_NAME }}
           environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
-          version_label: ${{ github.sha }}
           region: ${{ secrets.AWS_REGION }}
-          deployment_package: deploy.zip
+          version_label: "app-${{ github.sha }}"
+          deployment_package: ./LeasePro-Cloud/deploy.zip
