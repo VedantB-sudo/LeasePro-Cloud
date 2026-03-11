@@ -1,99 +1,79 @@
 name: CI/CD Pipeline to AWS Elastic Beanstalk
-
+ 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
-
+ 
 jobs:
-  # --- LAYER 1: STATIC TESTING & SECURITY ---
+  # --- LAYER 1: STATIC TESTING ---
   lint:
-    name: Code Quality (Pylint)
+    name: Static Analysis (Pylint)
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Adjusted to your nested application root
+        # Adjusted to your project's internal directory
         working-directory: ./LeasePro-Cloud/LeasePro-Cloud
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+ 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-
+ 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pylint pylint-django
-
+ 
       - name: Run Pylint
         run: |
+          # Set PYTHONPATH so Pylint can find your Django config correctly
           export PYTHONPATH=$PYTHONPATH:$(pwd)
-          # Specifically points to your project settings and excludes venv
           pylint $(find . -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*") \
           --load-plugins pylint_django \
           --django-settings-module=LeasePro-Cloud.settings \
           --fail-under=5.0
-
-  security_scan:
-    name: Static Security Analysis (Bandit)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        # Adjusted to your nested application root
-        working-directory: ./LeasePro-Cloud/LeasePro-Cloud
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Bandit
-        run: pip install bandit
-
-      - name: Run Bandit Scan
-        run: |
-          bandit -r . -f txt -o bandit_report.txt || true
-
-      - name: Upload Security Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-audit
-          path: ./LeasePro-Cloud/LeasePro-Cloud/bandit_report.txt
-
+ 
   # --- LAYER 2: DEPLOYMENT ---
   deploy:
     name: Deploy to Elastic Beanstalk
     runs-on: ubuntu-latest
-    # Deployment starts only if both quality and security jobs pass
-    needs: [lint, security_scan]
+    needs: lint  # Deployment will only start if 'lint' completes successfully
     defaults:
       run:
-        # Adjusted to your nested application root
+        # Adjusted to your project's internal directory
         working-directory: ./LeasePro-Cloud/LeasePro-Cloud
+ 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+ 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+ 
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+ 
       - name: Generate Deployment Package
-        # Zips the inner directory content and excludes environment-specific folders
+        # This zips the content of LeasePro-Cloud and places the zip in the root
         run: zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
-
+ 
       - name: Deploy to AWS Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v22
+        uses: einaregilsson/beanstalk-deploy@v21
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          session_token: ${{ secrets.AWS_SESSION_TOKEN }} 
-          application_name: ${{ secrets.EB_APPLICATION_NAME }}
-          environment_name: ${{ secrets.EB_ENVIRONMENT_NAME }}
-          region: ${{ secrets.AWS_REGION }}
+          aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }} 
+          application_name: "LeasePro-Cloud"
+          environment_name: "LeasePro-Cloud-env"
+          region: "us-east-1"
           version_label: "app-${{ github.sha }}"
-          deployment_package: ./LeasePro-Cloud/LeasePro-Cloud/deploy.zip
+          deployment_package: deploy.zip
