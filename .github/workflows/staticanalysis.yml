@@ -24,18 +24,19 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f "LeasePro-Cloudfolder/requirements.txt" ]; then
-            pip install -r LeasePro-Cloudfolder/requirements.txt
+          # Path updated: requirements.txt is now in the root
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
           fi
           pip install pylint pylint-django
 
       - name: Run pylint
         run: |
-          # FIX: Ensuring the runner finds the app modules
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/LeasePro-Cloudfolder
+          # Path updated: PYTHONPATH now points to the current root
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           
-          # FIX: Ignoring the .c9 metadata and using the correct settings path
-          pylint $(find LeasePro-Cloudfolder -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*" -not -path "*/.c9/*") \
+          # Path updated: find command now starts at root
+          pylint $(find . -name "*.py" -not -path "*/venv/*" -not -path "*/migrations/*" -not -path "*/.c9/*") \
           --load-plugins pylint_django \
           --django-settings-module=propertymanager.settings \
           --fail-under=5.0

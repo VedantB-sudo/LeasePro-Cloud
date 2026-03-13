@@ -1,6 +1,7 @@
 {
     "extensions": {
-        "@aws.samcli.lambdaTimeout": 90000
+        "@aws.samcli.lambdaTimeout": 90000,
+        "@git.ignoreLimitWarning": true
     },
     "instance": {
         "@automaticShutdown": "30"
@@ -36,11 +37,6 @@
         "@first": true
     },
     "workspace": {
-        "@folders": [
-            {
-                "name": "LeasePro-Cloudfolder",
-                "path": "/LeasePro-Cloudfolder"
-            }
-        ]
+        "@folders": []
     }
 }

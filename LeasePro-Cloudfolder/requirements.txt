@@ -1,5 +1,0 @@
-django>=3.2
-mysqlclient>=2.2
-Pillow>=10.0.0
-gunicorn
-requests==2.32.5
