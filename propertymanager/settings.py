@@ -9,11 +9,7 @@ SECRET_KEY = 'django-insecure--@k9g5=!mx@$wl^p!od%^_flmr+x7(3o_dhhn=ftb3x#cc)+f1
 # SECURITY WARNING: keep debug on for now to see errors, but turn off for final launch!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'leaseprocloudd-env.eba-9efagnyy.us-east-1.elasticbeanstalk.com',
-    '127.0.0.1',
-    'localhost',
-]
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
