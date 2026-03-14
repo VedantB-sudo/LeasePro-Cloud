@@ -82,8 +82,8 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }} 
-          application_name: "LeaseProCloudd"
-          environment_name: "LeaseProCloudd-env"
+          application_name: "LeasePro-Cloud"
+          environment_name: "LeasePro-Cloud-env"
           region: "us-east-1"
           version_label: "app-${{ github.sha }}"
           deployment_package: deploy.zip
