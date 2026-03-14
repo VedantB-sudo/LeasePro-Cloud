@@ -119,8 +119,14 @@ def tenant_dashboard(request):
 
 @login_required
 def login_success(request):
-    # Check if user is in 'Landlord' group OR is a superuser (for testing)
-    if request.user.groups.filter(name='Landlord').exists() or request.user.is_superuser:
-        return redirect('dashboard') 
-    else:
-        return redirect('tenant_dashboard')
+    """
+    Redirects users to their specific dashboard based on their role.
+    """
+    if hasattr(request.user, 'role'):
+        if request.user.role == 'landlord':
+            return redirect('dashboard')
+        elif request.user.role == 'tenant':
+            return redirect('tenant_dashboard')
+    
+    # Fallback if no role is found
+    return redirect('home')

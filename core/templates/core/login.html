@@ -15,6 +15,7 @@
             --text-muted: #94a3b8;
             --border: #1e293b;
             --success-green: #10b981;
+            --error-red: #ef4444;     /* Error Red */
         }
 
         body {
@@ -26,26 +27,37 @@
             justify-content: center;
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
-            /* Matching the global brand gradient */
             background: radial-gradient(circle at 50% -20%, #1e293b 0%, var(--bg-deep) 70%);
             color: var(--text-main);
         }
 
-        /* Success Message Styling */
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success-green);
+        /* Message Styling */
+        .alert {
             padding: 15px 25px;
             border-radius: 12px;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
             gap: 12px;
-            border: 1px solid var(--success-green);
-            animation: fadeIn 0.5s ease;
             max-width: 400px;
             width: 90%;
             font-size: 0.9rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
+            border: 1px solid var(--success-green);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-red);
+            border: 1px solid var(--error-red);
+            text-align: left;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .auth-card {
@@ -72,7 +84,6 @@
             font-size: 0.95rem;
         }
 
-        /* Django Form Styling */
         form p { 
             text-align: left; 
             color: var(--text-main); 
@@ -100,7 +111,6 @@
             box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1);
         }
 
-        /* Vivid Gold Button */
         button {
             width: 100%;
             padding: 16px;
@@ -144,7 +154,7 @@
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert-success">
+            <div class="alert alert-success">
                 <i class="fas fa-check-circle"></i> {{ message }}
             </div>
         {% endfor %}
@@ -156,6 +166,22 @@
         
         <form method="post">
             {% csrf_token %}
+
+            {% if form.errors or form.non_field_errors %}
+                <div class="alert alert-error">
+                    {% for error in form.non_field_errors %}
+                        <p style="margin: 0; font-weight: 400;"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+                    {% endfor %}
+                    {% for field in form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <p style="margin: 0; font-weight: 400;"><i class="fas fa-exclamation-circle"></i> {{ field.label }}: {{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {{ form.as_p }}
             <button type="submit">Secure Login</button>
         </form>
