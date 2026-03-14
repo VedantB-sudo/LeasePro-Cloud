@@ -1,4 +1,7 @@
 {
+    "build": {
+        "@saveall": true
+    },
     "extensions": {
         "@aws.samcli.lambdaTimeout": 90000,
         "@git.ignoreLimitWarning": true

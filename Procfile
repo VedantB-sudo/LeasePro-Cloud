@@ -1,1 +1,1 @@
-web: gunicorn --bind 127.0.0.1:8000 propertymanager.wsgi:application
+web: gunicorn propertymanager.wsgi:application

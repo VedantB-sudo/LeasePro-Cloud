@@ -8,10 +8,7 @@ SECRET_KEY = 'django-insecure--@k9g5=!mx@$wl^p!od%^_flmr+x7(3o_dhhn=ftb3x#cc)+f1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
-
-# Application definition
+ALLOWED_HOSTS = ['leaseprocloudd-env.eba-9efagnyy.us-east-1.elasticbeanstalk.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,12 +52,8 @@ WSGI_APPLICATION = 'propertymanager.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # Make sure this is exactly right
-        'NAME': 'leasepro_db',
-        'USER': 'VedantB-sudo',
-        'PASSWORD': 'admin123',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -105,6 +98,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://638c2b93c5494c41b570b402e16f38d0.vfs.cloud9.us-east-1.amazonaws.com'
-]
+CSRF_TRUSTED_ORIGINS = ['https://638c2b93c5494c41b570b402e16f38d0.vfs.cloud9.us-east-1.amazonaws.com']
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
