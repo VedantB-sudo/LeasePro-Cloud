@@ -41,7 +41,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True,
+        'APP_DIRS': True, # This tells Django to look inside /core/templates/
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
