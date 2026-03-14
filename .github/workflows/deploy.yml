@@ -5,11 +5,10 @@ on:
     branches: [ main ]
 
 jobs:
-  # --- STAGE 1 ---
+  # --- STAGE 1: LINT ---
   lint:
     name: Static Analysis (Pylint)
     runs-on: ubuntu-latest
-    # Removed working-directory: ./LeasePro-Cloudfolder
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -34,7 +33,7 @@ jobs:
           --django-settings-module=propertymanager.settings \
           --fail-under=5.0
 
-  # --- STAGE 2 ---
+  # --- STAGE 2: SONARQUBE ---
   sonarqube:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
@@ -58,7 +57,7 @@ jobs:
             -Dsonar.python.version=3.11
             -Dsonar.exclusions=**/migrations/**,**/venv/**,**/.c9/**
 
-  # --- STAGE 3 ---
+  # --- STAGE 3: DEPLOY ---
   deploy:
     name: Deploy to Elastic Beanstalk
     runs-on: ubuntu-latest
@@ -67,23 +66,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python-version: '3.9'
 
       - name: Generate deployment package
         run: |
-          # Package everything in the root, excluding environment folders
-          zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
+          # Exclude environment files and static assets to keep the package small
+          zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*" "staticfiles/*"
 
       - name: Deploy to AWS Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v21
+        uses: einaregilsson/beanstalk-deploy@v22
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
