@@ -13,10 +13,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.9'
           cache: 'pip'
 
       - name: Install Dependencies
@@ -54,7 +54,7 @@ jobs:
             -Dsonar.projectKey=VedantB-sudo_LeasePro-Cloud
             -Dsonar.organization=vedantb-sudo
             -Dsonar.sources=.
-            -Dsonar.python.version=3.11
+            -Dsonar.python.version=3.9
             -Dsonar.exclusions=**/migrations/**,**/venv/**,**/.c9/**
 
   # --- STAGE 3: DEPLOY ---
@@ -73,8 +73,8 @@ jobs:
 
       - name: Generate deployment package
         run: |
-          # Exclude environment files and static assets to keep the package small
-          zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*" "staticfiles/*"
+          # Ensure you include .ebextensions but exclude venv and .c9
+          zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
@@ -82,8 +82,8 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }} 
-          application_name: "LeasePro-Cloud"
-          environment_name: "LeasePro-Cloud-env"
+          application_name: "LeaseProCloudd"
+          environment_name: "LeaseProCloudd-env"
           region: "us-east-1"
           version_label: "app-${{ github.sha }}"
           deployment_package: deploy.zip
