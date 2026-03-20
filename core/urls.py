@@ -3,8 +3,6 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    # --- Home and Authentication ---
-    # This 'home' name matches your 'RETURN TO SAFETY' button in access_denied.html
     path('', views.home, name='home'),
     
     # Auth Views: Standardized to 'core/' folder to match your project structure
