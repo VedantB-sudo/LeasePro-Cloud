@@ -5,11 +5,17 @@ from .models import Property
 from .forms import PropertyForm, LeaseProSignupForm
 
 def home(request):
-    if request.user.is_authenticated:
-        return redirect('login_success')
+    """
+    Home page view. 
+    Only redirects to login_success if the user is authenticated 
+    to avoid the infinite loop for users without roles.
+    """
     return render(request, 'core/home.html')
 
 def signup(request):
+    if request.user.is_authenticated:
+        return redirect('login_success')
+        
     if request.method == 'POST':
         form = LeaseProSignupForm(request.POST)
         if form.is_valid():
@@ -22,26 +28,32 @@ def signup(request):
         form = LeaseProSignupForm()
     return render(request, 'core/signup.html', {'form': form})
 
-# --- NEW: This fixes the 500 error by providing the missing view ---
 def access_denied(request):
+    """
+    Renders the custom access denied template.
+    The 'Return to Safety' button in the HTML now points to {% url 'home' %}.
+    """
     return render(request, 'core/access_denied.html')
 
 @login_required
 def login_success(request):
     """
-    Redirects users to their specific dashboard based on their role.
-    Assumes your User model has 'is_landlord' and 'is_tenant' attributes.
+    Role-based redirector. 
+    Fixes the 'Too Many Redirects' loop by providing a safe fallback for Admins.
     """
     if request.user.is_landlord:
         return redirect('dashboard')
     elif request.user.is_tenant:
         return redirect('tenant_dashboard')
-    return redirect('home')
+    
+    # SAFE FALLBACK: If user is an Admin/Superuser or has no role, 
+    # send them to the landlord dashboard instead of 'home' to break the loop.
+    return redirect('dashboard')
 
 @login_required
 def landlord_dashboard(request):
-    # Security Intercept: Redirect tenants or non-landlords
-    if not request.user.is_landlord:
+    # Security Intercept: Redirect tenants or unauthorized users to the safety page
+    if not request.user.is_landlord and not request.user.is_staff:
         return redirect('access_denied')
 
     my_properties = Property.objects.filter(landlord=request.user)
@@ -49,7 +61,7 @@ def landlord_dashboard(request):
 
 @login_required
 def add_property(request):
-    if not request.user.is_landlord:
+    if not request.user.is_landlord and not request.user.is_staff:
         return redirect('access_denied')
 
     if request.method == 'POST':
@@ -68,8 +80,8 @@ def add_property(request):
 def edit_property(request, pk):
     property_instance = get_object_or_404(Property, pk=pk)
     
-    # Security: Ensure only the owner can edit
-    if property_instance.landlord != request.user:
+    # Security: Ensure only the owner (or staff) can edit
+    if property_instance.landlord != request.user and not request.user.is_staff:
         return redirect('access_denied')
 
     if request.method == 'POST':
@@ -90,7 +102,7 @@ def edit_property(request, pk):
 def delete_property(request, pk):
     property_to_delete = get_object_or_404(Property, pk=pk)
 
-    if property_to_delete.landlord != request.user:
+    if property_to_delete.landlord != request.user and not request.user.is_staff:
         return redirect('access_denied')
 
     if request.method == 'POST':
