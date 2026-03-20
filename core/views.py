@@ -3,21 +3,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Property
 from .forms import PropertyForm, LeaseProSignupForm
-from django.shortcuts import render
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('login_success')
     return render(request, 'core/home.html')
 
 def signup(request):
     if request.method == 'POST':
         form = LeaseProSignupForm(request.POST)
         if form.is_valid():
-            # This triggers the 'save' method you wrote in forms.py 
-            # which maps the radio button to the boolean flags.
             user = form.save() 
-            
             messages.success(request, f'Account created for {user.username}!')
             return redirect('login')
         else:
@@ -26,75 +22,61 @@ def signup(request):
         form = LeaseProSignupForm()
     return render(request, 'core/signup.html', {'form': form})
 
+# --- NEW: This fixes the 500 error by providing the missing view ---
+def access_denied(request):
+    return render(request, 'core/access_denied.html')
+
+@login_required
+def login_success(request):
+    """
+    Redirects users to their specific dashboard based on their role.
+    Assumes your User model has 'is_landlord' and 'is_tenant' attributes.
+    """
+    if request.user.is_landlord:
+        return redirect('dashboard')
+    elif request.user.is_tenant:
+        return redirect('tenant_dashboard')
+    return redirect('home')
+
 @login_required
 def landlord_dashboard(request):
-    if request.user.is_tenant and not request.user.is_landlord:
-        return redirect('tenant_browse')
+    # Security Intercept: Redirect tenants or non-landlords
     if not request.user.is_landlord:
-        return render(request, 'core/access_denied.html')
+        return redirect('access_denied')
 
     my_properties = Property.objects.filter(landlord=request.user)
     return render(request, 'core/dashboard.html', {'properties': my_properties})
 
 @login_required
 def add_property(request):
+    if not request.user.is_landlord:
+        return redirect('access_denied')
+
     if request.method == 'POST':
-        # Notice we add request.FILES here
         form = PropertyForm(request.POST, request.FILES) 
         if form.is_valid():
             property_item = form.save(commit=False)
             property_item.landlord = request.user
             property_item.save()
-            messages.success(request, 'Property listed with image successfully!')
+            messages.success(request, 'Property listed successfully!')
             return redirect('dashboard')
     else:
         form = PropertyForm()
     return render(request, 'core/add_property.html', {'form': form})
 
 @login_required
-def tenant_browse(request):
-    all_properties = Property.objects.all()
-    return render(request, 'core/tenant_browse.html', {'properties': all_properties})
-
-@login_required
-def delete_property(request, pk):
-    # Fetch the property and ensure the user owns it
-    property_to_delete = get_object_or_404(Property, pk=pk)
-
-    # Security: Secondary check to prevent unauthorized deletion
-    if property_to_delete.landlord != request.user:
-        return render(request, 'core/access_denied.html')
-
-    if request.method == 'POST':
-        property_to_delete.delete()
-        messages.success(request, 'Property deleted successfully.')
-        return redirect('dashboard') # Send landlord back to their list
-
-    # If it's a GET request, show the confirmation page
-    return render(request, 'core/confirm_delete.html', {'property': property_to_delete})
-
-@login_required
-def property_detail(request, pk):
-    """
-    Fetches a specific property by its ID (pk).
-    """
-    property = get_object_or_404(Property, pk=pk)
-    return render(request, 'core/property_detail.html', {'property': property})
-
-@login_required
 def edit_property(request, pk):
-    # Fetch the specific property or return 404 if not found
     property_instance = get_object_or_404(Property, pk=pk)
     
     # Security: Ensure only the owner can edit
-    if property_instance.landlord != request.user and not request.user.is_staff:
-        return redirect('dashboard')
+    if property_instance.landlord != request.user:
+        return redirect('access_denied')
 
     if request.method == 'POST':
-        # Pass 'instance' so Django updates the existing record instead of creating a new one
         form = PropertyForm(request.POST, request.FILES, instance=property_instance)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Property updated successfully.')
             return redirect('property_detail', pk=property_instance.pk)
     else:
         form = PropertyForm(instance=property_instance)
@@ -105,28 +87,31 @@ def edit_property(request, pk):
     })
 
 @login_required
-def dashboard(request):
-    if request.user.is_landlord:
-        return render(request, 'core/dashboard.html')
-    else:
-        return render(request, 'core/tenant_dashboard.html')
+def delete_property(request, pk):
+    property_to_delete = get_object_or_404(Property, pk=pk)
+
+    if property_to_delete.landlord != request.user:
+        return redirect('access_denied')
+
+    if request.method == 'POST':
+        property_to_delete.delete()
+        messages.success(request, 'Property deleted successfully.')
+        return redirect('dashboard')
+
+    return render(request, 'core/confirm_delete.html', {'property': property_to_delete})
 
 @login_required
 def tenant_dashboard(request):
-    # This view displays all listings to the tenant
+    # Displays all listings to the tenant
     properties = Property.objects.all() 
     return render(request, 'core/tenant_dashboard.html', {'properties': properties})
 
 @login_required
-def login_success(request):
-    """
-    Redirects users to their specific dashboard based on their role.
-    """
-    if hasattr(request.user, 'role'):
-        if request.user.role == 'landlord':
-            return redirect('dashboard')
-        elif request.user.role == 'tenant':
-            return redirect('tenant_dashboard')
-    
-    # Fallback if no role is found
-    return redirect('home')
+def tenant_browse(request):
+    all_properties = Property.objects.all()
+    return render(request, 'core/tenant_browse.html', {'properties': all_properties})
+
+@login_required
+def property_detail(request, pk):
+    property_obj = get_object_or_404(Property, pk=pk)
+    return render(request, 'core/property_detail.html', {'property': property_obj})
