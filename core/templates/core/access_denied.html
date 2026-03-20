@@ -24,7 +24,7 @@
             justify-content: center;
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
-            /* Gradient shift: Central glow to match the restriction vibe */
+            /* Central glow to match the LeasePro-Cloud restriction vibe */
             background: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.05) 0%, var(--bg-deep) 70%);
             color: var(--text-main);
             padding: 20px;
@@ -45,7 +45,7 @@
             font-size: 5rem;
             color: var(--accent-red);
             margin-bottom: 25px;
-            /* Subtle red glow around the icon */
+            /* Red glow around the security icon */
             filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.3));
         }
 
@@ -63,8 +63,11 @@
             font-size: 1.05rem;
         }
 
+        /* Updated class name to match the HTML anchor tag below */
         .btn-home {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             background: var(--accent-gold);
             color: var(--bg-deep);
             padding: 14px 35px;
@@ -74,12 +77,15 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            cursor: pointer;
         }
 
         .btn-home:hover {
             transform: translateY(-3px);
             filter: brightness(1.1);
             box-shadow: 0 10px 20px rgba(251, 191, 36, 0.2);
+            color: var(--bg-deep); /* Ensure text stays dark on hover */
         }
     </style>
 </head>
@@ -90,7 +96,9 @@
         <h1>Restricted Access</h1>
         <p>Oops! It looks like you don't have the necessary permissions to view this page. This area is reserved for authorized users only.</p>
         
-        <a href="{% url 'home' %}" class="btn btn-warning">RETURN TO SAFETY</a>
+        <a href="{% url 'home' %}" class="btn-home">
+            <i class="fas fa-arrow-left"></i> RETURN TO SAFETY
+        </a>
     </div>
 
 </body>
