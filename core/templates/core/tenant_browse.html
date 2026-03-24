@@ -4,73 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explore Properties | LeasePro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-deep: #050a15;
-            --bg-card: #0d1425;
-            --accent-gold: #fbbf24;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #1e293b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+            --danger: #ef4444;
         }
 
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 50% -20%, #1e293b 0%, var(--bg-deep) 80%);
-            color: var(--text-main);
-            padding: 50px 5%;
+            background-color: var(--bg-light);
+            background-image: radial-gradient(#cbd5e1 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+            color: var(--text-dark);
+            display: flex;
             min-height: 100vh;
         }
 
-        .header {
+        /* Consistent Sidebar */
+        .sidebar { 
+            width: 260px; 
+            background: var(--white); 
+            height: 100vh; 
+            position: fixed; 
+            padding: 40px 25px; 
+            box-sizing: border-box; 
+            border-right: 1px solid var(--border);
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 50px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 20px;
+            z-index: 100;
         }
 
-        .header h1 {
+        .sidebar h2 { 
+            color: var(--primary); 
+            margin: 0 0 30px 0;
             font-weight: 800;
-            font-size: 2.5rem;
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+        }
+
+        .nav-link { 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted); 
+            text-decoration: none; 
+            padding: 12px 15px; 
+            border-radius: 12px; 
+            transition: all 0.2s; 
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .nav-link.active {
+            background: #eff6ff;
+            color: var(--primary);
+        }
+
+        .nav-link:hover:not(.active) { 
+            background: #f1f5f9; 
+            color: var(--primary); 
+        }
+
+        .logout-btn { 
+            background: transparent; 
+            color: var(--text-muted); 
+            border: 1px solid var(--border); 
+            padding: 12px; 
+            width: 100%; 
+            cursor: pointer; 
+            border-radius: 10px; 
+            font-weight: 700; 
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover { 
+            background: #fef2f2; 
+            color: var(--danger); 
+            border-color: #fee2e2;
+        }
+
+        /* Main Grid Area */
+        .main-content { 
+            flex: 1; 
+            margin-left: 260px; 
+            padding: 50px; 
+        }
+
+        .header-section {
+            margin-bottom: 40px;
+        }
+
+        .header-section h1 {
+            font-weight: 800;
+            font-size: 2.25rem;
             letter-spacing: -1.5px;
             margin: 0;
-            background: linear-gradient(to right, #fff, var(--accent-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-dark);
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-size: 1.1rem;
         }
 
         .property-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 35px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
         }
 
         .property-card {
-            background: var(--bg-card);
+            background: var(--white);
             border: 1px solid var(--border);
             border-radius: 24px;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .property-card:hover {
-            transform: translateY(-12px);
-            border-color: var(--accent-gold);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(251, 191, 36, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
         }
 
-        /* Image handling for the grid */
         .card-image {
             width: 100%;
-            height: 220px;
-            background: #1e293b;
+            height: 200px;
+            background: #e2e8f0;
             position: relative;
             overflow: hidden;
         }
@@ -79,145 +157,136 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
         }
 
-        .property-card:hover .card-image img {
-            transform: scale(1.1);
+        .price-overlay {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: var(--white);
+            color: var(--text-dark);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .card-content {
-            padding: 25px;
-        }
-
-        .price-tag {
-            color: var(--accent-gold);
-            font-size: 1.6rem;
-            font-weight: 800;
-            margin-bottom: 8px;
+            padding: 24px;
             display: flex;
-            align-items: baseline;
-            gap: 4px;
-        }
-
-        .price-tag span {
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: var(--text-muted);
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .address { 
-            font-size: 1.15rem; 
+            font-size: 1.2rem; 
             font-weight: 700;
-            margin-bottom: 12px; 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .address i {
-            color: var(--accent-gold);
-            margin-right: 8px;
-            font-size: 0.9rem;
+            margin-bottom: 10px; 
+            color: var(--text-dark);
         }
 
         .description { 
             color: var(--text-muted); 
             font-size: 0.95rem; 
-            margin-bottom: 25px; 
+            margin-bottom: 20px; 
             line-height: 1.6;
-            height: 3.2em;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
         .btn-view {
-            display: block;
+            margin-top: auto;
             text-align: center;
-            background: var(--accent-gold);
-            color: var(--bg-deep);
-            padding: 14px;
+            background: #f1f5f9;
+            color: var(--primary);
+            padding: 12px;
             border-radius: 12px;
             text-decoration: none;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.85rem;
-            transition: 0.3s;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.2s;
         }
 
-        .btn-view:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3);
-        }
-
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logout-btn:hover {
-            background: #ef4444;
-            color: white;
-            border-color: #ef4444;
+        .property-card:hover .btn-view {
+            background: var(--primary);
+            color: var(--white);
         }
 
         .empty-state {
-            text-align: center;
-            padding: 100px 0;
-            color: var(--text-muted);
             grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 0;
+            background: var(--white);
+            border-radius: 24px;
+            border: 2px dashed var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 80px; padding: 20px 10px; }
+            .sidebar h2, .nav-link span, .logout-btn span { display: none; }
+            .main-content { margin-left: 80px; padding: 30px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Explore Properties</h1>
-        <form action="{% url 'logout' %}" method="post" id="logout-form">
+    <nav class="sidebar">
+        <div>
+            <h2>LeasePro</h2>
+            <div class="nav-links">
+                <a href="{% url 'tenant_dashboard' %}" class="nav-link active">
+                    <i class="fas fa-house-search"></i> <span>Explore Homes</span>
+                </a>
+            </div>
+        </div>
+        
+        <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="logout-btn" onclick="return confirm('Are you sure you want to log out of LeasePro?')">
-                <i class="fas fa-sign-out-alt"></i> Logout
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
             </button>
         </form>
-    </div>
+    </nav>
 
-    <div class="property-grid">
-        {% for property in properties %}
-        <div class="property-card">
-            <div class="card-image">
-                {% if property.image %}
-                    <img src="{{ property.image.url }}" alt="{{ property.address }}">
-                {% else %}
-                    <div style="height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.2;">
-                        <i class="fas fa-building fa-4x"></i>
-                    </div>
-                {% endif %}
-            </div>
-            
-            <div class="card-content">
-                <div class="price-tag">£{{ property.rent_amount }}<span>/mo</span></div>
-                <div class="address"><i class="fas fa-location-dot"></i> {{ property.address }}</div>
-                <p class="description">{{ property.description|truncatewords:15 }}</p>
+    <main class="main-content">
+        <div class="header-section">
+            <h1>Find your next home</h1>
+            <p>Discover premium listings managed by LeasePro landlords.</p>
+        </div>
+
+        <div class="property-grid">
+            {% for property in properties %}
+            <div class="property-card">
+                <div class="card-image">
+                    {% if property.image %}
+                        <img src="{{ property.image.url }}" alt="{{ property.address }}">
+                    {% else %}
+                        <div style="height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.2;">
+                            <i class="fas fa-mountain-city fa-3x"></i>
+                        </div>
+                    {% endif %}
+                    <div class="price-overlay">£{{ property.rent_amount }}</div>
+                </div>
                 
-                <a href="{% url 'property_detail' pk=property.pk %}" class="btn-view">View Listing</a>
+                <div class="card-content">
+                    <div class="address">{{ property.address }}</div>
+                    <p class="description">{{ property.description|truncatewords:15 }}</p>
+                    
+                    <a href="{% url 'property_detail' pk=property.pk %}" class="btn-view">View Property</a>
+                </div>
             </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-ghost fa-3x" style="margin-bottom: 20px; opacity: 0.2; color: var(--primary);"></i>
+                <p style="font-weight: 600;">No properties found.</p>
+                <p style="color: var(--text-muted);">Check back later for new listings!</p>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="empty-state">
-            <i class="fas fa-search fa-3x" style="margin-bottom: 20px; opacity: 0.2;"></i>
-            <p>No properties available at the moment. Check back later!</p>
-        </div>
-        {% endfor %}
-    </div>
+    </main>
 
 </body>
 </html>

@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-deep: #050a15;
-            --bg-card: #0d1425;
-            --accent-gold: #fbbf24;
-            --accent-red: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #1e293b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --danger-soft: #fef2f2;
         }
 
         body {
@@ -24,36 +25,45 @@
             justify-content: center;
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
-            /* Central glow to match the LeasePro-Cloud restriction vibe */
-            background: radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.05) 0%, var(--bg-deep) 70%);
-            color: var(--text-main);
+            background-color: var(--bg-light);
+            /* Subtle dot pattern background */
+            background-image: radial-gradient(#cbd5e1 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+            color: var(--text-dark);
             padding: 20px;
         }
 
         .error-card {
-            background: var(--bg-card);
+            background: white;
             border: 1px solid var(--border);
             border-radius: 24px;
             padding: 60px 40px;
             text-align: center;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        i.fa-shield-halved {
-            font-size: 5rem;
-            color: var(--accent-red);
-            margin-bottom: 25px;
-            /* Red glow around the security icon */
-            filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.3));
+        .icon-container {
+            width: 100px;
+            height: 100px;
+            background: var(--danger-soft);
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            border: 1px solid #fee2e2;
         }
 
         h1 { 
             margin: 10px 0; 
             font-weight: 800; 
-            color: var(--text-main);
+            color: var(--text-dark);
             letter-spacing: -1px;
+            font-size: 1.8rem;
         }
 
         p { 
@@ -63,41 +73,52 @@
             font-size: 1.05rem;
         }
 
-        /* Updated class name to match the HTML anchor tag below */
         .btn-home {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
-            background: var(--accent-gold);
-            color: var(--bg-deep);
-            padding: 14px 35px;
+            background: var(--primary);
+            color: white;
+            padding: 16px 35px;
             border-radius: 12px;
             text-decoration: none;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.2s;
             border: none;
             cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .btn-home:hover {
-            transform: translateY(-3px);
-            filter: brightness(1.1);
-            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.2);
-            color: var(--bg-deep); /* Ensure text stays dark on hover */
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-home i {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            .error-card {
+                padding: 40px 25px;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="error-card">
-        <i class="fas fa-shield-halved"></i>
+        <div class="icon-container">
+            <i class="fas fa-shield-halved"></i>
+        </div>
         <h1>Restricted Access</h1>
-        <p>Oops! It looks like you don't have the necessary permissions to view this page. This area is reserved for authorized users only.</p>
+        <p>Your account does not have the permissions required to access this resource. If you believe this is an error, please contact the system administrator.</p>
         
         <a href="{% url 'home' %}" class="btn-home">
-            <i class="fas fa-arrow-left"></i> RETURN TO SAFETY
+            <i class="fas fa-arrow-left"></i> Return to Safety
         </a>
     </div>
 
