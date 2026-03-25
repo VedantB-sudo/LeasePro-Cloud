@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Property
 from .forms import PropertyForm, LeaseProSignupForm
+from django.views.decorators.http import require_GET
 
+@require_GET
 def home(request):
     """
     Home page view. 
@@ -28,10 +30,11 @@ def signup(request):
         form = LeaseProSignupForm()
     return render(request, 'core/signup.html', {'form': form})
 
+@require_GET
 def access_denied(request):
     """
     Renders the custom access denied template.
-    The 'Return to Safety' button in the HTML now points to {% url 'home' %}.
+    SonarQube Fix: Restricted to safe GET method.
     """
     return render(request, 'core/access_denied.html')
 
@@ -39,20 +42,21 @@ def access_denied(request):
 def login_success(request):
     """
     Role-based redirector. 
-    Fixes the 'Too Many Redirects' loop by providing a safe fallback for Admins.
+    Fixes the 'Too Many Redirects' loop by ensuring every user type 
+    has a concrete destination.
     """
     if request.user.is_landlord:
         return redirect('dashboard')
     elif request.user.is_tenant:
         return redirect('tenant_dashboard')
     
-    # SAFE FALLBACK: If user is an Admin/Superuser or has no role, 
-    # send them to the landlord dashboard instead of 'home' to break the loop.
+    # SAFE FALLBACK: If user is an Admin/Superuser or role-less, 
+    # send them to the primary dashboard to break the loop.
     return redirect('dashboard')
 
 @login_required
 def landlord_dashboard(request):
-    # Security Intercept: Redirect tenants or unauthorized users to the safety page
+    # Security Intercept: Redirect tenants or unauthorized users to safety
     if not request.user.is_landlord and not request.user.is_staff:
         return redirect('access_denied')
 
@@ -124,6 +128,10 @@ def tenant_browse(request):
     return render(request, 'core/tenant_browse.html', {'properties': all_properties})
 
 @login_required
+@require_GET
 def property_detail(request, pk):
+    """
+    SonarQube Fix: Added @require_GET to prevent unsafe method access.
+    """
     property_obj = get_object_or_404(Property, pk=pk)
     return render(request, 'core/property_detail.html', {'property': property_obj})
