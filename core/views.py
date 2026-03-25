@@ -130,8 +130,5 @@ def tenant_browse(request):
 @login_required
 @require_GET
 def property_detail(request, pk):
-    """
-    SonarQube Fix: Added @require_GET to prevent unsafe method access.
-    """
     property_obj = get_object_or_404(Property, pk=pk)
     return render(request, 'core/property_detail.html', {'property': property_obj})
