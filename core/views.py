@@ -1,7 +1,11 @@
+"""
+Views for the LeasePro application.
+Handles user authentication, property management, and role-based dashboards.
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST, require_http_methods
 
 from .models import Property
 from .forms import PropertyForm, LeaseProSignupForm
@@ -9,15 +13,18 @@ from .forms import PropertyForm, LeaseProSignupForm
 @require_GET
 def home(request):
     """
-    Home page view. 
-    Only redirects to login_success if the user is authenticated 
-    to avoid the infinite loop for users without roles.
+    Renders the home page. Redirects authenticated users to avoid loops.
     """
     if request.user.is_authenticated:
         return redirect('login_success')
     return render(request, 'core/home.html')
 
+@require_http_methods(["GET", "POST"])
 def signup(request):
+    """
+    Handles user registration. 
+    SonarQube Fix: Restricted to specific methods to resolve security hotspot.
+    """
     if request.user.is_authenticated:
         return redirect('login_success')
         
@@ -29,11 +36,9 @@ def signup(request):
             return redirect('login')
         
         # Pylint R1705 Fix: Removed 'else' after 'return'
-        # Code execution only reaches here if form.is_valid() is False
         print(f"Form Errors: {form.errors}")
     
-    # Pylint R1705 Fix: Removed 'else' after 'if request.method == POST'
-    # Code execution reaches here for GET requests or failed POST submissions
+    # Execution reaches here for GET requests or failed POST submissions
     form = LeaseProSignupForm()
     return render(request, 'core/signup.html', {'form': form})
 
@@ -41,7 +46,6 @@ def signup(request):
 def access_denied(request):
     """
     Renders the custom access denied template.
-    SonarQube Fix: Restricted to safe GET method only.
     """
     return render(request, 'core/access_denied.html')
 
@@ -49,26 +53,23 @@ def access_denied(request):
 @require_GET
 def login_success(request):
     """
-    Role-based redirector. 
-    Fixes the 'Too Many Redirects' loop by ensuring every user type 
-    has a concrete destination.
+    Redirects users to their respective dashboards based on roles.
     """
     if request.user.is_landlord:
         return redirect('dashboard')
-    elif request.user.is_tenant:
+    
+    if request.user.is_tenant:
         return redirect('tenant_dashboard')
     
-    # SAFE FALLBACK: If user is an Admin/Superuser or role-less, 
-    # send them to the primary dashboard to break the loop.
+    # Pylint R1705 Fix: Removed elif/else after return
     return redirect('dashboard')
 
 @login_required
 @require_GET
 def landlord_dashboard(request):
     """
-    SonarQube Fix: Added @require_GET as this view only fetches data.
+    Displays properties belonging to the logged-in landlord.
     """
-    # Security Intercept: Redirect tenants or unauthorized users to safety
     if not request.user.is_landlord and not request.user.is_staff:
         return redirect('access_denied')
 
@@ -76,7 +77,11 @@ def landlord_dashboard(request):
     return render(request, 'core/dashboard.html', {'properties': my_properties})
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def add_property(request):
+    """
+    Allows landlords to add new property listings.
+    """
     if not request.user.is_landlord and not request.user.is_staff:
         return redirect('access_denied')
 
@@ -88,15 +93,19 @@ def add_property(request):
             property_item.save()
             messages.success(request, 'Property listed successfully!')
             return redirect('dashboard')
-    else:
-        form = PropertyForm()
+            
+    # Pylint R1705 Fix: Logic flattened
+    form = PropertyForm()
     return render(request, 'core/add_property.html', {'form': form})
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def edit_property(request, pk):
+    """
+    Allows landlords to update existing property details.
+    """
     property_instance = get_object_or_404(Property, pk=pk)
     
-    # Security: Ensure only the owner (or staff) can edit
     if property_instance.landlord != request.user and not request.user.is_staff:
         return redirect('access_denied')
 
@@ -106,16 +115,20 @@ def edit_property(request, pk):
             form.save()
             messages.success(request, 'Property updated successfully.')
             return redirect('property_detail', pk=property_instance.pk)
-    else:
-        form = PropertyForm(instance=property_instance)
     
+    # Pylint R1705 Fix: Logic flattened
+    form = PropertyForm(instance=property_instance)
     return render(request, 'core/edit_property.html', {
         'form': form, 
         'property': property_instance
     })
 
 @login_required
+@require_http_methods(["GET", "POST"])
 def delete_property(request, pk):
+    """
+    Handles property deletion after confirmation.
+    """
     property_to_delete = get_object_or_404(Property, pk=pk)
 
     if property_to_delete.landlord != request.user and not request.user.is_staff:
@@ -132,9 +145,8 @@ def delete_property(request, pk):
 @require_GET
 def tenant_dashboard(request):
     """
-    SonarQube Fix: Added @require_GET.
+    Displays all available listings to tenants.
     """
-    # Displays all listings to the tenant
     properties = Property.objects.all() 
     return render(request, 'core/tenant_dashboard.html', {'properties': properties})
 
@@ -142,7 +154,7 @@ def tenant_dashboard(request):
 @require_GET
 def tenant_browse(request):
     """
-    SonarQube Fix: Added @require_GET.
+    Dedicated view for browsing all properties.
     """
     all_properties = Property.objects.all()
     return render(request, 'core/tenant_browse.html', {'properties': all_properties})
@@ -151,7 +163,7 @@ def tenant_browse(request):
 @require_GET
 def property_detail(request, pk):
     """
-    SonarQube Fix: Added @require_GET.
+    Displays full details for a single property.
     """
     property_obj = get_object_or_404(Property, pk=pk)
     return render(request, 'core/property_detail.html', {'property': property_obj})
