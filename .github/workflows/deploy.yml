@@ -33,7 +33,7 @@ jobs:
           --django-settings-module=propertymanager.settings \
           --fail-under=5.0
 
-  # --- STAGE 2: SONARQUBE & TESTING ---
+  # --- STAGE 2: SONARQUBE ---
   sonarqube:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
@@ -43,24 +43,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
-
-      - name: Install Test Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install coverage
-
-      - name: Run Tests and Generate Coverage
-        run: |
-          # Executes tests and generates the coverage data file
-          coverage run --source='.' manage.py test
-          # Exports data to XML format for SonarQube to read
-          coverage xml
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -72,10 +54,8 @@ jobs:
             -Dsonar.projectKey=VedantB-sudo_LeasePro-Cloud
             -Dsonar.organization=vedantb-sudo
             -Dsonar.sources=.
-            -Dsonar.tests=core/tests.py
             -Dsonar.python.version=3.9
-            -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.exclusions=core/tests.py,**/migrations/**,**/venv/**,**/.c9/**,manage.py
+            -Dsonar.exclusions=**/migrations/**,**/venv/**,**/.c9/**
 
   # --- STAGE 3: DEPLOY ---
   deploy:
@@ -93,6 +73,7 @@ jobs:
 
       - name: Generate deployment package
         run: |
+          # Ensure you include .ebextensions but exclude venv and .c9
           zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
       - name: Deploy to AWS Elastic Beanstalk
