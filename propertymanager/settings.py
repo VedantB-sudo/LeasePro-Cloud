@@ -4,12 +4,10 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure--@k9g5=!mx@$wl^p!od%^_flmr+x7(3o_dhhn=ftb3x#cc)+f1'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-test-key-only')
 
-# SECURITY WARNING: keep debug on for now to see errors, but turn off for final launch!
 DEBUG = True
 
-# For production, replace '*' with your specific EB and Cloud9 domains
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
