@@ -26,11 +26,14 @@ def signup(request):
             user = form.save() 
             messages.success(request, f'Account created for {user.username}!')
             return redirect('login')
-        else:
-            # For debugging purposes during development
-            print(f"Form Errors: {form.errors}")
-    else:
-        form = LeaseProSignupForm()
+        
+        # Pylint R1705 Fix: Removed 'else' after 'return'
+        # Code execution only reaches here if form.is_valid() is False
+        print(f"Form Errors: {form.errors}")
+    
+    # Pylint R1705 Fix: Removed 'else' after 'if request.method == POST'
+    # Code execution reaches here for GET requests or failed POST submissions
+    form = LeaseProSignupForm()
     return render(request, 'core/signup.html', {'form': form})
 
 @require_GET

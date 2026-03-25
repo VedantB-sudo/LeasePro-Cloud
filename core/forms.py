@@ -15,11 +15,10 @@ class LeaseProSignupForm(UserCreationForm):
         ('landlord', 'Landlord'),
         ('tenant', 'Tenant'),
     ]
-    
-    # Ensure this is indented exactly 4 spaces (1 tab)
+
     role = forms.ChoiceField(
-        choices=ROLE_CHOICES, 
-        widget=forms.RadioSelect, 
+        choices=ROLE_CHOICES,
+        widget=forms.RadioSelect,
         label="I am a:"
     )
 
@@ -29,16 +28,15 @@ class LeaseProSignupForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        # Ensure this matches the name of your ChoiceField!
-        selected_role = self.cleaned_data.get('role') 
-        
+        selected_role = self.cleaned_data.get('role')
+
         if selected_role == 'landlord':
             user.is_landlord = True
             user.is_tenant = False
         else:
             user.is_landlord = False
             user.is_tenant = True
-            
+
         if commit:
             user.save()
         return user
