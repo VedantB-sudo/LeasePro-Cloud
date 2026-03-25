@@ -7,7 +7,9 @@ class PropertyForm(forms.ModelForm):
     class Meta:
         model = Property
         fields = ['address', 'rent_amount', 'description', 'image']
-        widgets = {'description': forms.Textarea(attrs={'rows': 4}),}
+        widgets = {'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter property address'}),
+            'rent_amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Monthly rent'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),}
 
 # Registration Form
 class LeaseProSignupForm(UserCreationForm):

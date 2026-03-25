@@ -9,6 +9,7 @@ User = get_user_model()
 class LeaseProViewTests(TestCase):
     """
     Comprehensive test suite for LeasePro views to satisfy code coverage.
+    Updated to use correct model fields: 'address' and 'rent_amount'.
     """
 
     def setUp(self):
@@ -25,11 +26,11 @@ class LeaseProViewTests(TestCase):
             password='password123', 
             is_tenant=True
         )
-        # Create a sample Property
+        # Create a sample Property using correct field names
         self.property = Property.objects.create(
-            title="Dublin Apartment",
+            address="Dublin Apartment",
             landlord=self.landlord,
-            price=1500,
+            rent_amount=1500.00,
             description="A lovely city center apartment."
         )
 
@@ -73,7 +74,7 @@ class LeaseProViewTests(TestCase):
         response = self.client.get(reverse('login_success'))
         self.assertRedirects(response, reverse('tenant_dashboard'))
 
-    # --- Property Management Tests (Coverage for POST and Permissions) ---
+    # --- Property Management Tests ---
     def test_add_property_get(self):
         """Verify add_property page renders for landlords."""
         self.client.login(username='landlord_user', password='password123')
@@ -83,20 +84,19 @@ class LeaseProViewTests(TestCase):
     def test_add_property_post_success(self):
         """Verify landlords can successfully add a property."""
         self.client.login(username='landlord_user', password='password123')
-        # Simulate an image upload if your model requires it
         image = SimpleUploadedFile("test_image.jpg", b"file_content", content_type="image/jpeg")
         data = {
-            'title': 'Cork Cottage',
-            'price': 1200,
+            'address': 'Cork Cottage',
+            'rent_amount': 1200.00,
             'description': 'Rural escape.',
             'image': image
         }
         response = self.client.post(reverse('add_property'), data)
         self.assertRedirects(response, reverse('dashboard'))
-        self.assertTrue(Property.objects.filter(title='Cork Cottage').exists())
+        self.assertTrue(Property.objects.filter(address='Cork Cottage').exists())
 
     def test_edit_property_unauthorized(self):
-        """Verify tenants cannot edit a landlord's property (Access Denied)."""
+        """Verify tenants cannot edit a landlord's property."""
         self.client.login(username='tenant_user', password='password123')
         response = self.client.get(reverse('edit_property', args=[self.property.pk]))
         self.assertRedirects(response, reverse('access_denied'))
