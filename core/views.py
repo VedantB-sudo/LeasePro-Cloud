@@ -12,6 +12,8 @@ def home(request):
     Only redirects to login_success if the user is authenticated 
     to avoid the infinite loop for users without roles.
     """
+    if request.user.is_authenticated:
+        return redirect('login_success')
     return render(request, 'core/home.html')
 
 def signup(request):
@@ -25,6 +27,7 @@ def signup(request):
             messages.success(request, f'Account created for {user.username}!')
             return redirect('login')
         else:
+            # For debugging purposes during development
             print(f"Form Errors: {form.errors}")
     else:
         form = LeaseProSignupForm()
@@ -34,11 +37,12 @@ def signup(request):
 def access_denied(request):
     """
     Renders the custom access denied template.
-    SonarQube Fix: Restricted to safe GET method.
+    SonarQube Fix: Restricted to safe GET method only.
     """
     return render(request, 'core/access_denied.html')
 
 @login_required
+@require_GET
 def login_success(request):
     """
     Role-based redirector. 
@@ -55,7 +59,11 @@ def login_success(request):
     return redirect('dashboard')
 
 @login_required
+@require_GET
 def landlord_dashboard(request):
+    """
+    SonarQube Fix: Added @require_GET as this view only fetches data.
+    """
     # Security Intercept: Redirect tenants or unauthorized users to safety
     if not request.user.is_landlord and not request.user.is_staff:
         return redirect('access_denied')
@@ -117,18 +125,29 @@ def delete_property(request, pk):
     return render(request, 'core/confirm_delete.html', {'property': property_to_delete})
 
 @login_required
+@require_GET
 def tenant_dashboard(request):
+    """
+    SonarQube Fix: Added @require_GET.
+    """
     # Displays all listings to the tenant
     properties = Property.objects.all() 
     return render(request, 'core/tenant_dashboard.html', {'properties': properties})
 
 @login_required
+@require_GET
 def tenant_browse(request):
+    """
+    SonarQube Fix: Added @require_GET.
+    """
     all_properties = Property.objects.all()
     return render(request, 'core/tenant_browse.html', {'properties': all_properties})
 
 @login_required
 @require_GET
 def property_detail(request, pk):
+    """
+    SonarQube Fix: Added @require_GET.
+    """
     property_obj = get_object_or_404(Property, pk=pk)
     return render(request, 'core/property_detail.html', {'property': property_obj})
