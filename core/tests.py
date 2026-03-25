@@ -55,9 +55,9 @@ class LeaseProViewTests(TestCase):
         """Verify successful user registration."""
         data = {
             'username': 'new_user',
-            'password': 'StrongPassword123!',
-            'confirm_password': 'StrongPassword123!',
-            'is_tenant': True
+            'password1': 'StrongPassword123!', # Changed from 'password'
+            'password2': 'StrongPassword123!', # Changed from 'confirm_password'
+            'role': 'tenant'
         }
         response = self.client.post(reverse('signup'), data)
         self.assertRedirects(response, reverse('login'))
