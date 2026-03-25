@@ -27,7 +27,6 @@
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-light);
-            /* Subtle professional grid pattern */
             background-image: radial-gradient(#cbd5e1 0.5px, transparent 0.5px);
             background-size: 30px 30px;
             color: var(--text-dark);
@@ -63,7 +62,6 @@
             font-weight: 500;
         }
 
-        /* Django Form Container */
         form p { 
             display: flex;
             flex-direction: column;
@@ -83,7 +81,6 @@
             line-height: 1.4;
         }
 
-        /* Modern Input Styling */
         input:not([type="radio"]):not([type="checkbox"]), select {
             width: 100%;
             padding: 14px 16px;
@@ -104,7 +101,6 @@
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
 
-        /* Radio Button Alignment */
         form ul {
             display: flex !important;
             gap: 20px;
@@ -129,7 +125,6 @@
             cursor: pointer;
         }
 
-        /* Primary Action Button */
         button {
             width: 100%;
             padding: 16px;
@@ -167,7 +162,6 @@
 
         .back-link:hover { color: var(--primary); }
 
-        /* Error Handling Styles */
         .error-box {
             background: var(--error-bg);
             border: 1px solid #fee2e2;
@@ -200,7 +194,7 @@
             <div class="subtitle">Join our community today</div>
         </div>
         
-        <form method="post" action="{% url 'signup' %}">
+        <form method="POST" action="{% url 'signup' %}">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
@@ -216,7 +210,7 @@
                     <div class="error-box">
                         <strong>{{ field.label }}:</strong>
                         {% for error in field.errors %}
-                            <p>{{ error }}</p>
+                            <p><i class="fas fa-triangle-exclamation"></i> {{ error }}</p>
                         {% endfor %}
                     </div>
                 {% endif %}
