@@ -94,9 +94,14 @@ class LeaseProViewTests(TestCase):
 
 # --- Settings Coverage Test ---
 class SettingsTest(TestCase):
-    def test_settings_load(self):
-        """Ensures settings.py lines, including DEFAULT_AUTO_FIELD, are executed."""
-        self.assertEqual(settings.LOGIN_URL, 'login')
-        self.assertIn('core', settings.INSTALLED_APPS)
-        # This line specifically covers the 'Uncovered code' you highlighted
+    def test_settings_coverage(self):
+        """
+        Explicitly accesses settings to ensure code coverage 
+        reaches the final lines of settings.py.
+        """
+        # This covers the 'Uncovered code' line for DEFAULT_AUTO_FIELD
         self.assertEqual(settings.DEFAULT_AUTO_FIELD, 'django.db.models.BigAutoField')
+        
+        # Additional checks to cover other configuration branches
+        self.assertEqual(settings.LANGUAGE_CODE, 'en-us')
+        self.assertIn('core', settings.INSTALLED_APPS)
