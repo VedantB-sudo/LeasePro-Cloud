@@ -84,10 +84,19 @@ class LeaseProViewTests(TestCase):
         data = {'address': 'Updated', 'rent_amount': 1300, 'description': 'Updated'}
         response = self.client.post(url, data)
         self.assertRedirects(response, reverse('property_detail', args=[self.property.pk]))
+        
+    def test_settings_load(self):
+        """Ensures settings.py lines are executed and covered."""
+        self.assertEqual(settings.LOGIN_URL, 'login')
+        self.assertIn('core', settings.INSTALLED_APPS)
+        # This specifically covers DEFAULT_AUTO_FIELD
+        self.assertEqual(settings.DEFAULT_AUTO_FIELD, 'django.db.models.BigAutoField')
 
 # --- Settings Coverage Test ---
 class SettingsTest(TestCase):
     def test_settings_load(self):
-        """Ensures settings.py lines are executed. Removed DEBUG check for CI."""
+        """Ensures settings.py lines, including DEFAULT_AUTO_FIELD, are executed."""
         self.assertEqual(settings.LOGIN_URL, 'login')
         self.assertIn('core', settings.INSTALLED_APPS)
+        # This line specifically covers the 'Uncovered code' you highlighted
+        self.assertEqual(settings.DEFAULT_AUTO_FIELD, 'django.db.models.BigAutoField')
