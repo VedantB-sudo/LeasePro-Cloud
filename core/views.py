@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.views.decorators.http import require_GET
+
 from .models import Property
 from .forms import PropertyForm, LeaseProSignupForm
-from django.views.decorators.http import require_GET
 
 @require_GET
 def home(request):
