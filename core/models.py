@@ -43,11 +43,9 @@ class Property(models.Model):
         return str(self.address)
 
 @receiver(post_delete, sender=Property)
-def auto_delete_file_on_delete(_sender, instance, **kwargs):
+def auto_delete_file_on_delete(sender, instance, **kwargs): # Ensure sender and **kwargs are present
     """
-    Deletes image file from filesystem when corresponding Property object is deleted.
-    
-    Pylint Fix: Renamed 'sender' to '_sender' to resolve W0613 (unused-argument).
+    Deletes file from filesystem when corresponding Property object is deleted.
     """
     if instance.image:
         if os.path.isfile(instance.image.path):

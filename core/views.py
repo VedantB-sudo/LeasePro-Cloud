@@ -21,10 +21,6 @@ def home(request):
 
 @require_http_methods(["GET", "POST"])
 def signup(request):
-    """
-    Handles user registration. 
-    SonarQube Fix: Restricted to specific methods to resolve security hotspot.
-    """
     if request.user.is_authenticated:
         return redirect('login_success')
         
@@ -34,12 +30,11 @@ def signup(request):
             user = form.save() 
             messages.success(request, f'Account created for {user.username}!')
             return redirect('login')
+        # Log errors to CI console if validation fails
+        print(f"Signup Form Errors: {form.errors}")
+    else:
+        form = LeaseProSignupForm()
         
-        # Pylint R1705 Fix: Removed 'else' after 'return'
-        print(f"Form Errors: {form.errors}")
-    
-    # Execution reaches here for GET requests or failed POST submissions
-    form = LeaseProSignupForm()
     return render(request, 'core/signup.html', {'form': form})
 
 @require_GET
@@ -57,12 +52,9 @@ def login_success(request):
     """
     if request.user.is_landlord:
         return redirect('dashboard')
-    
-    if request.user.is_tenant:
+    elif request.user.is_tenant:
         return redirect('tenant_dashboard')
-    
-    # Pylint R1705 Fix: Removed elif/else after return
-    return redirect('dashboard')
+    return redirect('home')
 
 @login_required
 @require_GET
@@ -79,9 +71,6 @@ def landlord_dashboard(request):
 @login_required
 @require_http_methods(["GET", "POST"])
 def add_property(request):
-    """
-    Allows landlords to add new property listings.
-    """
     if not request.user.is_landlord and not request.user.is_staff:
         return redirect('access_denied')
 
@@ -93,9 +82,14 @@ def add_property(request):
             property_item.save()
             messages.success(request, 'Property listed successfully!')
             return redirect('dashboard')
-            
-    # Pylint R1705 Fix: Logic flattened
-    form = PropertyForm()
+        
+        # CRITICAL: If invalid, do NOT overwrite the form. 
+        # Log it so you can see why the CI test is failing.
+        print(f"Property Form Errors: {form.errors}")
+    else:
+        form = PropertyForm()
+    
+    # Pass the 'form' (which now contains error messages) back to the template
     return render(request, 'core/add_property.html', {'form': form})
 
 @login_required
