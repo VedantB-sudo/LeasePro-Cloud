@@ -9,6 +9,7 @@ SECRET_KEY = 'django-insecure--@k9g5=!mx@$wl^p!od%^_flmr+x7(3o_dhhn=ftb3x#cc)+f1
 # SECURITY WARNING: keep debug on for now to see errors, but turn off for final launch!
 DEBUG = True
 
+# For production, replace '*' with your specific EB and Cloud9 domains
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -37,7 +38,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True, # This tells Django to look inside /core/templates/
+        'APP_DIRS': True, 
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -76,24 +77,24 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 # Authentication Settings
 AUTH_USER_MODEL = 'core.User'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'login_success'
 LOGOUT_REDIRECT_URL = 'home'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
 # Security Settings
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# CSRF Trusted Origins (Critical for Elastic Beanstalk and Cloud9)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 CSRF_TRUSTED_ORIGINS = [
     'https://638c2b93c5494c41b570b402e16f38d0.vfs.cloud9.us-east-1.amazonaws.com',
-    'http://leaseprocloudd-env.eba-9efagnyy.us-east-1.elasticbeanstalk.com',
     'https://leaseprocloudd-env.eba-9efagnyy.us-east-1.elasticbeanstalk.com'
 ]
 
