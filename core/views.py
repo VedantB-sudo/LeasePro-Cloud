@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-
+from django.views.decorators.csrf import csrf_protect
 from .models import Property
 from .forms import PropertyForm, LeaseProSignupForm
 
@@ -19,6 +19,7 @@ def home(request):
         return redirect('login_success')
     return render(request, 'core/home.html')
 
+@csrf_protect  # Ensures CSRF tokens are validated
 @require_http_methods(["GET", "POST"])
 def signup(request):
     if request.user.is_authenticated:
