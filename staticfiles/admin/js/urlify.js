@@ -101,7 +101,7 @@
     const GEORGIAN_MAP = {
         'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z',
         'თ': 't', 'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o',
-        'პ': 'p', 'ჟ': 'j', 'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'f',
+        'პ': 'p', 'ჟ': 'j', 'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'φ': 'f',
         'ქ': 'q', 'ღ': 'g', 'ყ': 'y', 'შ': 'sh', 'ჩ': 'ch', 'ც': 'c', 'ძ': 'dz',
         'წ': 'w', 'ჭ': 'ch', 'ხ': 'x', 'ჯ': 'j', 'ჰ': 'h'
     };
@@ -160,7 +160,10 @@
         } else {
             s = s.replace(/[^-\w\s]/g, ''); // remove unneeded chars
         }
-        s = s.replace(/^\s+|\s+$/g, ''); // trim leading/trailing spaces
+        
+        // FIX: Replaced vulnerable regex with native trim()
+        s = s.trim(); 
+        
         s = s.replace(/[-\s]+/g, '-'); // convert spaces to hyphens
         s = s.substring(0, num_chars); // trim to first num_chars chars
         return s.replace(/-+$/g, ''); // trim any trailing hyphens
