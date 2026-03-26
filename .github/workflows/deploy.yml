@@ -44,13 +44,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # FIX: Use Java 17 to prevent java.lang.UnsupportedClassVersionError
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
       - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
@@ -63,9 +56,10 @@ jobs:
 
       - name: Run Tests & Generate Coverage Report
         env:
+          # Use the secret you added to GitHub so tests pass without security hotspots
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
-          # Ensure coverage scans project files
+          # CHANGED: --source='.' ensures settings.py and other project files are scanned
           coverage run --source='.' manage.py test
           coverage xml -o coverage.xml
 
@@ -99,6 +93,7 @@ jobs:
 
       - name: Generate deployment package
         run: |
+          # Ensure we include the static directory we created
           zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
       - name: Deploy to AWS Elastic Beanstalk
