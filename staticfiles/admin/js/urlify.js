@@ -44,8 +44,8 @@
         'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
         'А': 'A', 'Б': 'B', 'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ё': 'Yo',
         'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'Й': 'J', 'К': 'K', 'Л': 'L', 'М': 'M',
-        'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U',
-        'Ф': 'F', 'Х': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sh', 'Ъ': '',
+        'Н': 'N', 'О': 'O', 'Π': 'P', 'Ρ': 'R', 'Σ': 'S', 'Τ': 'T', 'Υ': 'U',
+        'Φ': 'F', 'Χ': 'H', 'Ц': 'C', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Sh', 'Ъ': '',
         'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
     };
     const UKRAINIAN_MAP = {
@@ -101,7 +101,7 @@
     const GEORGIAN_MAP = {
         'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z',
         'თ': 't', 'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o',
-        'პ': 'p', 'ჟ': 'j', 'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'φ': 'f',
+        'პ': 'p', 'ჟ': 'j', 'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'f',
         'ქ': 'q', 'ღ': 'g', 'ყ': 'y', 'შ': 'sh', 'ჩ': 'ch', 'ც': 'c', 'ძ': 'dz',
         'წ': 'w', 'ჭ': 'ch', 'ხ': 'x', 'ჯ': 'j', 'ჰ': 'h'
     };
@@ -145,28 +145,29 @@
         });
     }
 
-
     function URLify(s, num_chars, allowUnicode) {
-        // changes, e.g., "Petty theft" to "petty-theft"
         if (!allowUnicode) {
             s = downcode(s);
         }
-        s = s.toLowerCase(); // convert to lowercase
-        // if downcode doesn't hit, the char will be stripped here
+        s = s.toLowerCase();
         if (allowUnicode) {
-            // Keep Unicode letters including both lowercase and uppercase
-            // characters, whitespace, and dash; remove other characters.
             s = XRegExp.replace(s, XRegExp('[^-_\\p{L}\\p{N}\\s]', 'g'), '');
         } else {
-            s = s.replace(/[^-\w\s]/g, ''); // remove unneeded chars
+            s = s.replace(/[^-\w\s]/g, '');
         }
         
-        // FIX: Replaced vulnerable regex with native trim()
+        // FIX 1: Native trim() to avoid leading/trailing space backtracking
         s = s.trim(); 
         
-        s = s.replace(/[-\s]+/g, '-'); // convert spaces to hyphens
-        s = s.substring(0, num_chars); // trim to first num_chars chars
-        return s.replace(/-+$/g, ''); // trim any trailing hyphens
+        s = s.replace(/[-\s]+/g, '-');
+        s = s.substring(0, num_chars);
+
+        // FIX 2: Safer way to remove trailing hyphens to avoid DoS warning
+        while (s.endsWith('-')) {
+            s = s.slice(0, -1);
+        }
+        
+        return s;
     }
     window.URLify = URLify;
 }
