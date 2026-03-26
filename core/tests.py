@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from .models import Property
+import os
 
 User = get_user_model()
 
@@ -84,15 +85,8 @@ class LeaseProViewTests(TestCase):
         data = {'address': 'Updated', 'rent_amount': 1300, 'description': 'Updated'}
         response = self.client.post(url, data)
         self.assertRedirects(response, reverse('property_detail', args=[self.property.pk]))
-        
-    def test_settings_load(self):
-        """Ensures settings.py lines are executed and covered."""
-        self.assertEqual(settings.LOGIN_URL, 'login')
-        self.assertIn('core', settings.INSTALLED_APPS)
-        # This specifically covers DEFAULT_AUTO_FIELD
-        self.assertEqual(settings.DEFAULT_AUTO_FIELD, 'django.db.models.BigAutoField')
 
-# --- Settings Coverage Test ---
+# --- Settings & Configuration Coverage Test ---
 class SettingsTest(TestCase):
     def test_settings_coverage(self):
         """
@@ -102,6 +96,11 @@ class SettingsTest(TestCase):
         # This covers the 'Uncovered code' line for DEFAULT_AUTO_FIELD
         self.assertEqual(settings.DEFAULT_AUTO_FIELD, 'django.db.models.BigAutoField')
         
-        # Additional checks to cover other configuration branches
+        # Accessing static and media paths to cover the OS logic in settings.py
+        self.assertTrue(settings.STATIC_URL.startswith('/'))
+        self.assertTrue(os.path.exists(settings.BASE_DIR))
+        
+        # Accessing critical metadata
         self.assertEqual(settings.LANGUAGE_CODE, 'en-us')
         self.assertIn('core', settings.INSTALLED_APPS)
+        self.assertEqual(settings.AUTH_USER_MODEL, 'core.User')

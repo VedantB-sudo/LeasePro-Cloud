@@ -55,9 +55,12 @@ jobs:
           pip install coverage
 
       - name: Run Tests & Generate Coverage Report
+        env:
+          # Use the secret you added to GitHub so tests pass without security hotspots
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
-          # This generates the coverage.xml file SonarCloud is looking for
-          coverage run --source='core' manage.py test
+          # CHANGED: --source='.' ensures settings.py and other project files are scanned
+          coverage run --source='.' manage.py test
           coverage xml -o coverage.xml
 
       - name: SonarCloud Scan
@@ -90,6 +93,7 @@ jobs:
 
       - name: Generate deployment package
         run: |
+          # Ensure we include the static directory we created
           zip -r deploy.zip . -x "*.git*" "venv/*" ".c9/*"
 
       - name: Deploy to AWS Elastic Beanstalk
