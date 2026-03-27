@@ -20,7 +20,7 @@ def home(request):
     return render(request, 'core/home.html')
 
 @csrf_protect  # Ensures CSRF tokens are validated
-@require_http_methods(["GET", "POST"])
+@require_http_methods(["GET", "POST"])  
 def signup(request):
     if request.user.is_authenticated:
         return redirect('login_success')

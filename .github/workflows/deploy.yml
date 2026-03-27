@@ -56,7 +56,7 @@ jobs:
 
       - name: Run Tests & Generate Coverage Report
         env:
-          # Use the secret you added to GitHub so tests pass without security hotspots
+          # Use the secret you added to GitHub so tests pass without security hotspot
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
         run: |
           # CHANGED: --source='.' ensures settings.py and other project files are scanned
