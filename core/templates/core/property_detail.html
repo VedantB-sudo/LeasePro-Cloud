@@ -251,7 +251,8 @@
         <div>
             <h2>LeasePro</h2>
             <div class="nav-links">
-                {% if user.is_staff %}
+                {# Updated Sidebar logic to show landlord links based on ownership or staff status #}
+                {% if user == property.landlord or user.is_staff %}
                     <a href="{% url 'dashboard' %}" class="nav-link"><i class="fas fa-chart-pie"></i> Portfolio</a>
                     <a href="{% url 'add_property' %}" class="nav-link"><i class="fas fa-plus-circle"></i> Add Listing</a>
                 {% else %}
@@ -306,7 +307,8 @@
                 </div>
 
                 <div class="admin-actions">
-                    {% if user.is_staff %}
+                    {# Logic update: Check for owner OR staff status #}
+                    {% if user == property.landlord or user.is_staff %}
                         <a href="{% url 'edit_property' property.pk %}" class="btn btn-edit">
                             <i class="fas fa-sliders-h"></i> Manage Listing
                         </a>
