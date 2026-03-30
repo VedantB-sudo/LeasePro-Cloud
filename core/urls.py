@@ -30,4 +30,5 @@ urlpatterns = [
     # --- Security Intercepts ---
     # Centralized access denied route for unauthorized navigation attempts
     path('access-denied/', views.access_denied, name='access_denied'),
+    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ]
