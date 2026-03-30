@@ -6,44 +6,253 @@
     {% load static %}
     <link rel="icon" type="image/png" href="{% static 'icon/favicon.png' %}">
     <title>LeasePro | Premium Property Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            /* Soft geometric grid background */
+            background-image: radial-gradient(#cbd5e1 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { 
+            font-size: 1.5rem; 
+            font-weight: 800; 
+            color: var(--primary); 
+            text-decoration: none; 
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--primary); }
+
+        .nav-btn {
+            background: var(--primary);
+            color: white !important;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background 0.2s !important;
+        }
+
+        .nav-btn:hover { background: var(--primary-hover); }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 100px 20px 60px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            color: var(--text-dark);
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 1.5rem auto;
+            line-height: 1.6;
+        }
+
+        .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 2.5rem;
+        }
+
+        /* Modern Buttons */
+        .btn {
+            padding: 16px 36px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.2s;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; border: 1px solid var(--primary); }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-dark); }
+
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); 
+        }
+
+        /* Role Cards */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            max-width: 1100px;
+            margin: 40px auto 80px;
+            padding: 0 20px;
+        }
+
+        .role-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            text-align: left;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: #eff6ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .role-card h2 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .role-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .card-btn {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: gap 0.2s;
+        }
+
+        .role-card:hover .card-btn {
+            gap: 12px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            background: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.8rem; }
+            nav { padding: 1rem 5%; }
+            .nav-links a:not(.nav-btn) { display: none; }
+        }
+    </style>
 </head>
 <body>
 
     <nav>
-        <a href="{% url 'home' %}">LeasePro</a>
-        <div>
+        <a href="{% url 'home' %}" class="logo">LeasePro</a>
+        <div class="nav-links">
             <a href="{% url 'login' %}">Sign In</a>
-            <a href="{% url 'signup' %}">Get Started</a>
+            <a href="{% url 'signup' %}" class="nav-btn">Get Started</a>
         </div>
     </nav>
 
-    <header>
+    <header class="hero">
         <h1>Property <span>Management</span></h1>
         <p>A high-performance cloud ecosystem designed to streamline connections between landlords and tenants.</p>
         
-        <div>
-            <a href="{% url 'signup' %}">Create Free Account</a>
-            <a href="{% url 'login' %}">Access Portal</a>
+        <div class="cta-group">
+            <a href="{% url 'signup' %}" class="btn btn-primary">Create Free Account</a>
+            <a href="{% url 'login' %}" class="btn btn-outline">Access Portal</a>
         </div>
     </header>
 
-    <main>
-        <div>
-            <div>
-                <i></i>
+    <main class="container">
+        <div class="role-card">
+            <div class="card-icon">
+                <i class="fas fa-building-user"></i>
             </div>
             <h2>For Landlords</h2>
             <p>Full portfolio authority. List properties, manage tenant data, and oversee rent flow via your secure cloud dashboard.</p>
-            <a href="{% url 'signup' %}">Apply as Landlord <i></i></a>
+            <a href="{% url 'signup' %}" class="card-btn">Apply as Landlord <i class="fas fa-arrow-right"></i></a>
         </div>
 
-        <div>
-            <div>
-                <i></i>
+        <div class="role-card">
+            <div class="card-icon">
+                <i class="fas fa-house-chimney-window"></i>
             </div>
             <h2>For Tenants</h2>
             <p>Access high-quality listings in real-time. Securely browse available properties and connect with verified landlords.</p>
-            <a href="{% url 'tenant_browse' %}">Browse Listings <i></i></a>
+            <a href="{% url 'tenant_browse' %}" class="card-btn">Browse Listings <i class="fas fa-arrow-right"></i></a>
         </div>
     </main>
 
